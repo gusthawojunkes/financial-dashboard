@@ -1,0 +1,64 @@
+<div class="ia-grid">
+    <!-- Card de Análise Rápida -->
+    <div class="card text-center">
+      <h2>Análise Rápida com IA</h2>
+      <p>Obtenha um resumo e dicas personalizadas sobre as suas finanças.</p>
+      <button class="btn btn-primary" [disabled]="!isDataLoaded" (click)="getFinancialInsights()">
+        ✨ Obter Análise Financeira
+      </button>
+      <p *ngIf="!isDataLoaded" class="notice-text">
+        Importe um ficheiro para ativar esta funcionalidade.
+      </p>
+    </div>
+  
+    <!-- Card de Chat -->
+    <div class="card">
+      <h2>Chat com o seu Assistente Financeiro</h2>
+      <p>Faça perguntas sobre as suas transações em linguagem natural.</p>
+  
+      <div class="chat-container">
+        <div *ngFor="let msg of chatHistory" class="chat-message" [ngClass]="{'user-message': msg.role === 'user', 'ai-message': msg.role === 'ai'}">
+          <div class="chat-bubble">
+            <div *ngIf="!msg.isTyping">{{ msg.content }}</div>
+            <div *ngIf="msg.isTyping" class="typing-indicator">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <form class="chat-form" (ngSubmit)="handleChatMessage()">
+        <input type="text" class="form-input" placeholder="Pergunte sobre as suas finanças..." [(ngModel)]="chatInput" name="chatInput" [disabled]="!isDataLoaded || isChatLoading">
+        <button type="submit" class="btn btn-primary" [disabled]="!isDataLoaded || isChatLoading">
+           <svg class="send-icon" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Modal para Análise Rápida -->
+  <div *ngIf="showModal" class="modal-overlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3>✨ Análise Financeira da IA</h3>
+        <button class="close-button" (click)="toggleModal(false)">&times;</button>
+      </div>
+      <div class="modal-content">
+        <div *ngIf="isInsightsLoading" class="loading-spinner"></div>
+        <div *ngIf="!isInsightsLoading && insights && !insights.error" class="insights-content">
+          <h4>Resumo Financeiro</h4>
+          <p>{{ insights.summary }}</p>
+          <h4>Dicas para Poupar</h4>
+          <ul>
+            <li *ngFor="let tip of insights.tips">{{ tip }}</li>
+          </ul>
+          <h4>Ponto de Atenção</h4>
+          <p>{{ insights.observation }}</p>
+        </div>
+         <div *ngIf="!isInsightsLoading && insights?.error" class="error-message">
+           {{ insights.error }}
+         </div>
+      </div>
+    </div>
+  </div>
+  

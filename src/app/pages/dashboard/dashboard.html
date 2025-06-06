@@ -1,0 +1,80 @@
+<div *ngIf="transactions.length > 0; else noData" class="dashboard-grid">
+    <!-- Summary Cards -->
+    <div class="summary-cards">
+      <div class="card summary-card">
+        <div class="summary-icon revenue-icon">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 6v2m0 8v2m-6-4h.01M18 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <div>
+          <p class="summary-title">Receitas</p>
+          <p class="summary-value">{{ summary.revenue | currency:'BRL' }}</p>
+        </div>
+      </div>
+      <div class="card summary-card">
+        <div class="summary-icon expenses-icon">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+        </div>
+        <div>
+          <p class="summary-title">Despesas</p>
+          <p class="summary-value">{{ summary.expenses | currency:'BRL' }}</p>
+        </div>
+      </div>
+      <div class="card summary-card">
+        <div class="summary-icon balance-icon">
+          <svg fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l-6-2m6 2l-3 9M12 14l-3-9m0 0l-3-1m-3 1l3 9"></path></svg>
+        </div>
+        <div>
+          <p class="summary-title">Saldo</p>
+          <p class="summary-value" [class.positive]="summary.balance >= 0" [class.negative]="summary.balance < 0">
+            {{ summary.balance | currency:'BRL' }}
+          </p>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Chart -->
+    <div class="card">
+      <div class="chart-header">
+        <h2 class="chart-title">{{ chartTitle }}</h2>
+        <button *ngIf="isDetailView" (click)="createCategoryChart()" class="back-button">&larr; Voltar para Categorias</button>
+      </div>
+      <div class="chart-container">
+        <canvas #mainChart id="main-chart"></canvas>
+      </div>
+    </div>
+  
+    <!-- Transactions Table -->
+    <div class="card">
+      <h2 class="table-title">Detalhes das Transações</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Descrição</th>
+              <th>Data</th>
+              <th>Categoria</th>
+              <th class="text-right">Valor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let tx of transactions" [class.revenue-row]="tx.value > 0" [class.expense-row]="tx.value < 0">
+              <td>{{ tx.description }}</td>
+              <td>{{ tx.transactionTime | date:'dd/MM/yyyy' }}</td>
+              <td><span class="category-tag">{{ tx.category }}</span></td>
+              <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0">
+                {{ tx.value | currency:'BRL' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Template para quando não há dados -->
+  <ng-template #noData>
+    <div class="card no-data-container">
+      <h2>Nenhum dado para exibir</h2>
+      <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
+    </div>
+  </ng-template>

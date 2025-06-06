@@ -1,0 +1,169 @@
+:host {
+    display: block;
+  }
+  
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  /* Cards de Resumo */
+  .summary-cards {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .summary-cards {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  
+  .summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    padding: 0.75rem;
+  
+    svg {
+      width: 1.5rem;
+      height: 1.5rem;
+      stroke: currentColor;
+    }
+  
+    &.revenue-icon {
+      background-color: #dcfce7;
+      color: #16a34a;
+    }
+    &.expenses-icon {
+      background-color: #fee2e2;
+      color: #dc2626;
+    }
+    &.balance-icon {
+      background-color: #dbeafe;
+      color: #2563eb;
+    }
+  }
+  
+  .summary-title {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+  
+  .summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+  }
+  
+  /* Gráfico */
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+  }
+  
+  .back-button {
+    font-size: 0.875rem;
+    color: #2563eb;
+    background: none;
+    border: none;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+  
+  .chart-container {
+    position: relative;
+    height: 400px;
+    width: 100%;
+  }
+  
+  /* Tabela de Transações */
+  .table-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+  
+  .table-wrapper {
+    overflow-x: auto;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  thead th {
+    background-color: #f9fafb;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  tbody tr {
+    &.revenue-row { background-color: rgba(220, 252, 231, 0.3); }
+    &.expense-row { background-color: rgba(254, 226, 226, 0.3); }
+  }
+  
+  td {
+    font-size: 0.875rem;
+    color: #374151;
+  }
+  
+  .category-tag {
+    display: inline-flex;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    border-radius: 9999px;
+    background-color: #e5e7eb;
+    color: #374151;
+  }
+  
+  /* Classes de Cor para Valores */
+  .positive { color: #16a34a; }
+  .negative { color: #dc2626; }
+  .text-right { text-align: right; }
+  
+  /* Mensagem de "Sem Dados" */
+  .no-data-container {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    h2 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    p {
+      color: #6b7280;
+      margin-top: 0.5rem;
+    }
+  }
