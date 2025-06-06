@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { TransactionsImportService, Transaction } from '../../services/data';
+import { FileParserService, Transaction } from '../../services/data';
 import Chart from 'chart.js/auto';
 
 @Component({
@@ -24,12 +24,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
 
   constructor(
-    private transactionImportService: TransactionsImportService,
+    private fileParserService: FileParserService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.transactionsSubscription = this.transactionImportService.currentTransactions.subscribe(transactions => {
+    this.transactionsSubscription = this.fileParserService.currentTransactions.subscribe(transactions => {
       this.transactions = transactions;
       if (transactions.length > 0) {
         this.calculateSummary();

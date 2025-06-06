@@ -38,7 +38,6 @@ export class AIService {
     }
   }
 
-  // Função específica para categorizar as transações com IA
   async categorizeTransactions(transactions: Transaction[]): Promise<Transaction[]> {
       const descriptions = [...new Set(transactions.map(t => t.description))];
       const schema = { type: "ARRAY", items: { type: "OBJECT", properties: { description: { "type": "STRING" }, category: { "type": "STRING" } }, required: ["description", "category"] } };

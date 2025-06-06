@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
-import { TransactionsImportService, Transaction } from '../../services/data';
+import { FileParserService, Transaction } from '../../services/data';
 import { AIService } from '../../services/ai';
 
 interface ChatMessage {
@@ -35,13 +35,13 @@ export class AIComponent implements OnInit, OnDestroy {
   isChatLoading = false;
 
   constructor(
-    private transactionImportService: TransactionsImportService,
+    private fileParserService: FileParserService,
     private geminiService: AIService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.transactionsSubscription = this.transactionImportService.currentTransactions.subscribe(transactions => {
+    this.transactionsSubscription = this.fileParserService.currentTransactions.subscribe(transactions => {
       this.isDataLoaded = transactions.length > 0;
       this.transactions = transactions;
       this.initializeChat();

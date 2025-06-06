@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TransactionsImportService } from '../../services/data';
+import { FileParserService } from '../../services/data';
 import { AIService } from '../../services/ai';
 import { SafeHtmlPipe } from '../../safe-html.pipe';
 
@@ -46,7 +46,7 @@ export class ImportComponent {
 
   constructor(
     private router: Router,
-    private transactionImportService: TransactionsImportService,
+    private fileParserService: FileParserService,
     private aiService: AIService
   ) {}
 
@@ -83,7 +83,6 @@ export class ImportComponent {
     
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       const file = event.dataTransfer.files[0];
-      // Verificar se o arquivo é de um tipo aceito
       const acceptedTypes = ['.ofx', '.pdf', '.csv'];
       const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
       
@@ -107,23 +106,37 @@ export class ImportComponent {
     this.loadingMessage = 'A processar o ficheiro...';
 
     try {
-      // 1. Simula a chamada à API para obter os dados brutos
-      const rawTransactions = await this.mockApiCall();
+      const params = {
+        fileType: this.fileType,
+        csvSeparator: this.csvSeparator,
+        datetimePattern: this.datetimePattern,
+        invoiceType: this.invoiceType,
+        institution: this.selectedBank.name
+      };
+      // Subscribe to the observable returned by processFile
+      this.fileParserService.processFile(this.selectedFile, params).subscribe(
+        async (rawTransactions) => {
+          this.loadingMessage = '✨ A categorizar com IA...';
+          const categorizedTransactions = await this.aiService.categorizeTransactions(rawTransactions);
+          
+          this.fileParserService.updateTransactions(categorizedTransactions);
+          this.router.navigate(['/dashboard']);
+        },
+        (error) => {
+          console.error('Falha no processo de importação:', error);
+          this.errorMessage = 'Falha ao processar o ficheiro.';
+          this.isLoading = false;
+          this.loadingMessage = '';
+        }
+      );
 
-      // 2. Chama o serviço Gemini para categorizar as transações
-      this.loadingMessage = '✨ A categorizar com IA...';
-      const categorizedTransactions = await this.aiService.categorizeTransactions(rawTransactions);
 
-      // 3. Atualiza os dados no serviço de dados
-      this.transactionImportService.updateTransactions(categorizedTransactions);
-
-      // 4. Navega para o dashboard
-      this.router.navigate(['/dashboard']);
 
     } catch (error) {
       console.error('Falha no processo de importação:', error);
       this.errorMessage = 'Falha ao comunicar com a IA ou processar o ficheiro.';
-    } finally {
+
+
       this.isLoading = false;
       this.loadingMessage = '';
     }
