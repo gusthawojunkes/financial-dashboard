@@ -1,144 +1,152 @@
 :host {
     display: block;
-  }
-  
-  .dashboard-grid {
+}
+
+.dashboard-grid {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-  }
-  
-  /* Cards de Resumo */
-  .summary-cards {
+}
+
+/* Cards de Resumo */
+.summary-cards {
     display: grid;
     grid-template-columns: repeat(1, 1fr);
     gap: 1.5rem;
-  }
-  
-  @media (min-width: 640px) {
+}
+
+@media (min-width: 640px) {
     .summary-cards {
-      grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
-  }
-  
-  .summary-card {
+}
+
+.summary-card {
     display: flex;
     align-items: center;
     gap: 1rem;
-  }
-  
-  .summary-icon {
+}
+
+.summary-icon {
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 9999px;
     padding: 0.75rem;
-  
+
     svg {
-      width: 1.5rem;
-      height: 1.5rem;
-      stroke: currentColor;
+        width: 1.5rem;
+        height: 1.5rem;
+        stroke: currentColor;
     }
-  
+
     &.revenue-icon {
-      background-color: #dcfce7;
-      color: #16a34a;
+        background-color: #dcfce7;
+        color: #16a34a;
     }
+
     &.expenses-icon {
-      background-color: #fee2e2;
-      color: #dc2626;
+        background-color: #fee2e2;
+        color: #dc2626;
     }
+
     &.balance-icon {
-      background-color: #dbeafe;
-      color: #2563eb;
+        background-color: #dbeafe;
+        color: #2563eb;
     }
-  }
-  
-  .summary-title {
+}
+
+.summary-title {
     font-size: 0.875rem;
     color: #6b7280;
-  }
-  
-  .summary-value {
+}
+
+.summary-value {
     font-size: 1.5rem;
     font-weight: 700;
     color: #111827;
-  }
-  
-  /* Gráfico */
-  .chart-header {
+}
+
+/* Gráfico */
+.chart-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-  }
-  
-  .chart-title {
+}
+
+.chart-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: #111827;
-  }
-  
-  .back-button {
+}
+
+.back-button {
     font-size: 0.875rem;
     color: #2563eb;
     background: none;
     border: none;
     cursor: pointer;
+
     &:hover {
-      text-decoration: underline;
+        text-decoration: underline;
     }
-  }
-  
-  .chart-container {
+}
+
+.chart-container {
     position: relative;
     height: 400px;
     width: 100%;
-  }
-  
-  /* Tabela de Transações */
-  .table-title {
+}
+
+/* Tabela de Transações */
+.table-title {
     font-size: 1.25rem;
     font-weight: 600;
     color: #111827;
     margin-bottom: 1rem;
-  }
-  
-  .table-wrapper {
+}
+
+.table-wrapper {
     overflow-x: auto;
-  }
-  
-  table {
+}
+
+table {
     width: 100%;
     border-collapse: collapse;
-  }
-  
-  th, td {
+}
+
+th, td {
     padding: 0.75rem 1rem;
     text-align: left;
     border-bottom: 1px solid #e5e7eb;
-  }
-  
-  thead th {
+}
+
+thead th {
     background-color: #f9fafb;
     font-size: 0.75rem;
     font-weight: 500;
     color: #6b7280;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-  }
-  
-  tbody tr {
-    &.revenue-row { background-color: rgba(220, 252, 231, 0.3); }
-    &.expense-row { background-color: rgba(254, 226, 226, 0.3); }
-  }
-  
-  td {
+}
+
+tbody tr {
+    &.revenue-row {
+        background-color: rgba(220, 252, 231, 0.3);
+    }
+
+    &.expense-row {
+        background-color: rgba(254, 226, 226, 0.3);
+    }
+}
+
+td {
     font-size: 0.875rem;
     color: #374151;
-  }
-  
-  .category-tag {
+}
+
+.category-tag {
     display: inline-flex;
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
@@ -147,23 +155,129 @@
     border-radius: 9999px;
     background-color: #e5e7eb;
     color: #374151;
-  }
-  
-  /* Classes de Cor para Valores */
-  .positive { color: #16a34a; }
-  .negative { color: #dc2626; }
-  .text-right { text-align: right; }
-  
-  /* Mensagem de "Sem Dados" */
-  .no-data-container {
+}
+
+/* Classes de Cor para Valores */
+.positive {
+    color: #16a34a;
+}
+
+.negative {
+    color: #dc2626;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* Mensagem de "Sem Dados" */
+.no-data-container {
     text-align: center;
     padding: 3rem 1.5rem;
+
     h2 {
-      font-size: 1.25rem;
-      font-weight: 600;
+        font-size: 1.25rem;
+        font-weight: 600;
     }
+
     p {
-      color: #6b7280;
-      margin-top: 0.5rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
     }
-  }
+}
+
+
+/* dashboard.scss ou dashboard.css */
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between; /* Alinha os seletores e a navegação nas extremidades */
+    align-items: center;
+    padding: 15px 20px; /* Adiciona padding interno */
+    border-top: 1px solid #eee; /* Linha sutil de separação */
+    margin-top: 10px; /* Espaço acima dos controles */
+    font-size: 0.9em;
+}
+
+.items-per-page-selector {
+    display: flex;
+    align-items: center;
+}
+
+.items-per-page-selector label {
+    margin-right: 8px;
+    color: #555;
+}
+
+.items-per-page-selector select {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s ease-in-out;
+}
+
+.items-per-page-selector select:hover {
+    border-color: #aaa;
+}
+
+.items-per-page-selector select:focus {
+    outline: none;
+    border-color: #007bff; /* Cor de destaque ao focar, ajuste conforme seu tema */
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Efeito de foco sutil */
+}
+
+.page-navigation {
+    display: flex;
+    align-items: center;
+}
+
+.page-navigation span {
+    margin: 0 15px; /* Espaçamento entre os botões e o texto da página */
+    color: #333;
+}
+
+.pagination-button {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    color: #007bff; /* Cor do texto do botão, ajuste conforme seu tema */
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    margin: 0 3px; /* Pequeno espaço entre os botões */
+}
+
+.pagination-button:hover:not([disabled]) {
+    background-color: #e9ecef;
+    border-color: #bbb;
+}
+
+.pagination-button:disabled {
+    color: #aaa;
+    cursor: not-allowed;
+    background-color: #f8f9fa;
+    border-color: #ddd;
+}
+
+/* Ajustes para telas menores, se necessário */
+@media (max-width: 600px) {
+    .pagination-controls {
+        flex-direction: column;
+        align-items: flex-start; /* Alinha itens à esquerda em telas pequenas */
+    }
+
+    .items-per-page-selector {
+        margin-bottom: 10px; /* Espaço entre o seletor e a navegação */
+    }
+
+    .page-navigation {
+        width: 100%;
+        justify-content: space-between; /* Distribui os botões e o texto da página */
+    }
+
+    .page-navigation span {
+        margin: 0 10px;
+    }
+}
