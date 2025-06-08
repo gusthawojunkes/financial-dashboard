@@ -4,13 +4,11 @@ import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 
-// Define uma interface para as transações para uma tipagem mais forte
 export interface Transaction {
     value: number;
     description: string;
     transactionTime: string;
     category?: string;
-    // Adicione outras propriedades se necessário
 }
 
 export interface ProcessFileParams {

@@ -18,10 +18,21 @@
                             </svg>
                             <p><span class="link-text">Clique para enviar</span> ou arraste e solte</p>
                             <p class="file-types-text">OFX, PDF, CSV</p>
-                            <span class="file-name-text">{{ fileName }}</span>
+                            <span class="file-name-text">
+                                <ng-container *ngIf="selectedFiles.length > 1">
+                                    {{ selectedFiles.length }} arquivos selecionados
+                                </ng-container>
+                                <ng-container *ngIf="selectedFiles.length === 1">
+                                    {{ selectedFiles[0].name }}
+                                </ng-container>
+                                <ng-container *ngIf="selectedFiles.length === 0">
+                                    {{ fileName }}
+                                </ng-container>
+                            </span>
                         </div>
                     </label>
-                    <input id="file-upload" type="file" (change)="onFileSelected($event)" accept=".ofx,.pdf,.csv">
+                    <input id="file-upload" type="file" (change)="onFileSelected($event)" accept=".ofx,.pdf,.csv"
+                           multiple>
                 </div>
             </div>
 

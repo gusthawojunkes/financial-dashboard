@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Transaction} from './data';
 import {environment} from '../../environments/environment';
+import {PROMPTS} from '../constants/prompts';
 
 @Injectable({
     providedIn: 'root'
@@ -38,7 +39,7 @@ export class AIService {
     }
 
     async categorizeTransactions(transactions: Transaction[]): Promise<Transaction[]> {
-        const descriptions = [...new Set(transactions.map(t => t.description))];
+        const uniqueDescriptions = [...new Set(transactions.map(t => t.description))];
         const schema = {
             type: "ARRAY",
             items: {
@@ -47,15 +48,19 @@ export class AIService {
                 required: ["description", "category"]
             }
         };
-        const prompt = `Categorize a lista de descrições de transações. Use apenas estas categorias: 'Alimentação', 'Transporte', 'Supermercado', 'Assinaturas', 'Saúde', 'Taxas e Impostos', 'Transferências', 'PIX', 'Salário', 'Moradia', 'Lazer', 'Compras', 'Educação', 'Outros'. "Pag.*Netflix" deve ser "Assinaturas". "Salario Empresa ABC" deve ser "Salário". Descrições: ${JSON.stringify(descriptions)}`;
-        const payload = {
-            contents: [{role: "user", parts: [{text: prompt}]}],
-            generationConfig: {responseMimeType: "application/json", responseSchema: schema}
-        };
-
-        const resultText = await this.callAI(payload);
-        const categoryMap = JSON.parse(resultText).reduce((map: any, item: any) => (map[item.description] = item.category, map), {});
-
+        const allResults: { description: string; category: string }[] = [];
+        for (let i = 0; i < uniqueDescriptions.length; i += 50) {
+            const batch = uniqueDescriptions.slice(i, i + 50);
+            const prompt = PROMPTS.CATEGORIZE_TRANSACTIONS(batch);
+            const payload = {
+                contents: [{role: "user", parts: [{text: prompt}]}],
+                generationConfig: {responseMimeType: "application/json", responseSchema: schema}
+            };
+            const resultText = await this.callAI(payload);
+            const batchResult = JSON.parse(resultText);
+            allResults.push(...batchResult);
+        }
+        const categoryMap = allResults.reduce((map: any, item: any) => (map[item.description] = item.category, map), {});
         return transactions.map(t => ({...t, category: categoryMap[t.description] || 'Outros'}));
     }
 }
