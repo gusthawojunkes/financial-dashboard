@@ -9,6 +9,9 @@ export interface Transaction {
     description: string;
     transactionTime: string;
     category?: string;
+    institutionUUID: string;
+    institution: string;
+    cardType: string;
 }
 
 export interface ProcessFileParams {
