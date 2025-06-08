@@ -2,7 +2,6 @@ import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {FileParserService} from '../../services/parser';
 import {AIService} from '../../services/ai';
 import {PROMPTS} from '../../constants/prompts';
 import {TransactionService} from '../../services/transaction';
@@ -31,7 +30,6 @@ export class AIComponent implements OnInit, OnDestroy {
     isChatLoading = false;
 
     constructor(
-        private fileParserService: FileParserService,
         private aiService: AIService,
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService

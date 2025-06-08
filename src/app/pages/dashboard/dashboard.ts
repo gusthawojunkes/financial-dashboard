@@ -11,10 +11,11 @@ import {
 } from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {Subscription} from 'rxjs';
-import {FileParserService, Transaction} from '../../services/parser';
+import {FileParserService} from '../../services/parser';
 import Chart from 'chart.js/auto';
 import {FormsModule} from '@angular/forms';
 import {TransactionService} from '../../services/transaction';
+import {Transaction} from '../../models/transaction.model';
 
 @Component({
     selector: 'app-dashboard',
