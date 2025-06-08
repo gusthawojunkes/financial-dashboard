@@ -2,15 +2,11 @@ import {Component, OnInit, OnDestroy, ChangeDetectorRef} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {FileParserService, Transaction} from '../../services/data';
 import {AIService} from '../../services/ai';
 import {PROMPTS} from '../../constants/prompts';
-
-interface ChatMessage {
-    role: 'user' | 'ai';
-    content: string;
-    isTyping?: boolean;
-}
+import {TransactionService} from '../../services/transaction';
+import {Transaction} from '../../models/transaction.model';
+import {ChatMessage} from '../../models/chat-message.model';
 
 @Component({
     selector: 'app-ia',
@@ -34,14 +30,14 @@ export class AIComponent implements OnInit, OnDestroy {
     isChatLoading = false;
 
     constructor(
-        private fileParserService: FileParserService,
         private aiService: AIService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private transactionService: TransactionService
     ) {
     }
 
     ngOnInit(): void {
-        this.transactionsSubscription = this.fileParserService.currentTransactions.subscribe(transactions => {
+        this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.isDataLoaded = transactions.length > 0;
             this.transactions = transactions;
             this.initializeChat();
