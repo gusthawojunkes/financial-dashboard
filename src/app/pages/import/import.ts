@@ -1,10 +1,11 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {FileParserService} from '../../services/data';
 import {AIService} from '../../services/ai';
 import {SafeHtmlPipe} from '../../safe-html.pipe';
+import {DataPersistenceService} from '../../services/data-persistence.service';
 
 interface Bank {
     name: string;
@@ -18,7 +19,7 @@ interface Bank {
     templateUrl: './import.html',
     styleUrls: ['./import.scss']
 })
-export class ImportComponent {
+export class ImportComponent implements OnInit {
     fileName: string = '';
     isLoading: boolean = false;
     loadingMessage: string = '';
@@ -55,12 +56,28 @@ export class ImportComponent {
     step2Done = false;
 
     selectedFiles: File[] = [];
+    persistedData: any[] = [];
 
     constructor(
         private router: Router,
         private fileParserService: FileParserService,
-        private aiService: AIService
+        private aiService: AIService,
+        private dataPersistence: DataPersistenceService
     ) {
+    }
+
+    ngOnInit(): void {
+        this.loadPersistedData();
+    }
+
+    async loadPersistedData() {
+        // Exemplo: Carrega todos os dados persistidos ao iniciar
+        const keys = this.dataPersistence.getAllKeys();
+        this.persistedData = keys.map(key => ({
+            institutionUUID: key,
+            data: this.dataPersistence.getItem(key)
+        }));
+        // Você pode adaptar para popular a tela conforme necessário
     }
 
     onFileSelected(event: Event): void {
@@ -121,15 +138,14 @@ export class ImportComponent {
             return;
         }
 
+        this.isLoading = true;
         const extensions = this.selectedFiles.map(f => f.name.split('.').pop()?.toLowerCase());
         const firstExt = extensions[0];
         if (!extensions.every(ext => ext === firstExt)) {
             this.errorMessage = 'Todos os arquivos devem ter o mesmo formato.';
+            this.isLoading = false;
             return;
         }
-
-        this.isLoading = true;
-        this.errorMessage = '';
         this.loadingMessage = 'Processando arquivos';
         this.step1Done = false;
         this.step2Done = false;
@@ -160,6 +176,7 @@ export class ImportComponent {
                             console.error('Falha no processo de importação:', error);
                             this.errorMessage = `Falha ao processar o arquivo ${this.selectedFiles[i].name}.`;
                             this.loadingMessage = '';
+                            this.isLoading = false;
                             reject(error);
                         },
                         complete: () => {
@@ -172,6 +189,16 @@ export class ImportComponent {
             const categorizedTransactions = await this.aiService.categorizeTransactions(allTransactions);
             this.step2Done = true;
             this.fileParserService.updateTransactions(categorizedTransactions);
+
+            // Salva os dados processados no localStorage usando institutionUUID
+            let institutionUUID = categorizedTransactions[0]?.institution;
+            if (!institutionUUID) {
+                institutionUUID = this.selectedBank.name;
+            }
+            // Adiciona novos registros sem duplicar institutionUUID
+            this.dataPersistence.addUniqueItems(institutionUUID, categorizedTransactions);
+
+            this.isLoading = false;
             await this.router.navigate(['/dashboard']);
         } catch (error) {
             console.error('Falha no processo de importação:', error);

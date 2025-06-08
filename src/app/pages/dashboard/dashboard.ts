@@ -12,6 +12,7 @@ import {
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {Subscription} from 'rxjs';
 import {FileParserService, Transaction} from '../../services/data';
+import {DataPersistenceService} from '../../services/data-persistence.service';
 import Chart from 'chart.js/auto';
 import {FormsModule} from '@angular/forms';
 
@@ -33,7 +34,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     isDetailView = false;
     public paginatedTransactions: Transaction[] = [];
     public currentPage: number = 1;
-    public itemsPerPage: number = 8; // Valor inicial
+    public itemsPerPage: number = 8;
     public itemsPerPageOptions: number[] = [8, 16, 24];
     public totalPages: number = 0;
 
@@ -41,7 +42,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
     constructor(
         private fileParserService: FileParserService,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+        private dataPersistence: DataPersistenceService
     ) {
     }
 
@@ -53,6 +55,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     }
 
     ngOnInit(): void {
+        // Carrega dados persistidos do localStorage ao iniciar
+        const keys = this.dataPersistence.getAllKeys();
+        let allPersistedTransactions: Transaction[] = [];
+        keys.forEach(key => {
+            const transactions = this.dataPersistence.getItem<Transaction[]>(key);
+            if (transactions && Array.isArray(transactions)) {
+                allPersistedTransactions = allPersistedTransactions.concat(transactions);
+            }
+        });
+        if (allPersistedTransactions.length > 0) {
+            this.fileParserService.updateTransactions(allPersistedTransactions);
+        }
         this.transactionsSubscription = this.fileParserService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
             if (transactions.length > 0) {
