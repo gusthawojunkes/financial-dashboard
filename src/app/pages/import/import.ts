@@ -19,8 +19,6 @@ interface Bank {
     styleUrls: ['./import.scss']
 })
 export class ImportComponent {
-    // Estado do formulário e da UI
-    selectedFile: File | null = null;
     fileName: string = '';
     isLoading: boolean = false;
     loadingMessage: string = '';
@@ -123,7 +121,6 @@ export class ImportComponent {
             return;
         }
 
-        // Verifica se todos os arquivos têm a mesma extensão
         const extensions = this.selectedFiles.map(f => f.name.split('.').pop()?.toLowerCase());
         const firstExt = extensions[0];
         if (!extensions.every(ext => ext === firstExt)) {
@@ -152,10 +149,6 @@ export class ImportComponent {
                 await new Promise<void>((resolve, reject) => {
                     this.fileParserService.processFile(this.selectedFiles[i], params).subscribe({
                         next: async (rawTransactions) => {
-                            this.step1Done = true;
-                            this.loadingMessage = 'Categorizando os seus gastos';
-                            //const categorizedTransactions = await this.aiService.categorizeTransactions(rawTransactions);
-                            this.step2Done = true;
                             if (Array.isArray(rawTransactions)) {
                                 allTransactions.push(...rawTransactions);
                             } else if (rawTransactions) {
@@ -166,10 +159,7 @@ export class ImportComponent {
                         error: (error) => {
                             console.error('Falha no processo de importação:', error);
                             this.errorMessage = `Falha ao processar o arquivo ${this.selectedFiles[i].name}.`;
-                            this.isLoading = false;
                             this.loadingMessage = '';
-                            this.step1Done = false;
-                            this.step2Done = false;
                             reject(error);
                         },
                         complete: () => {
@@ -177,7 +167,11 @@ export class ImportComponent {
                     });
                 });
             }
-            this.fileParserService.updateTransactions(allTransactions);
+            this.step1Done = true;
+            this.loadingMessage = 'Categorizando os seus gastos';
+            const categorizedTransactions = await this.aiService.categorizeTransactions(allTransactions);
+            this.step2Done = true;
+            this.fileParserService.updateTransactions(categorizedTransactions);
             await this.router.navigate(['/dashboard']);
         } catch (error) {
             console.error('Falha no processo de importação:', error);

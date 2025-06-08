@@ -4,6 +4,7 @@ import {FormsModule} from '@angular/forms';
 import {Subscription} from 'rxjs';
 import {FileParserService, Transaction} from '../../services/data';
 import {AIService} from '../../services/ai';
+import {PROMPTS} from '../../constants/prompts';
 
 interface ChatMessage {
     role: 'user' | 'ai';
@@ -90,7 +91,7 @@ export class AIComponent implements OnInit, OnDestroy {
             },
             required: ["summary", "tips", "observation"]
         };
-        const prompt = `Analise os dados financeiros. Receita: ${revenue.toFixed(2)}, Despesa: ${Math.abs(expenses).toFixed(2)}, Gastos por Categoria: ${JSON.stringify(spendingByCategory)}. Forneça em JSON (pt-BR): 1. "summary": resumo (2-3 frases), 2. "tips": 2-3 dicas para poupar, 3. "observation": 1 ponto de atenção.`;
+        const prompt = PROMPTS.ANALYZE_FINANCES({revenue, expenses, spendingByCategory});
         const payload = {
             contents: [{role: "user", parts: [{text: prompt}]}],
             generationConfig: {responseMimeType: "application/json", responseSchema: schema}
@@ -109,7 +110,7 @@ export class AIComponent implements OnInit, OnDestroy {
     toggleModal(state?: boolean): void {
         this.showModal = state !== undefined ? state : !this.showModal;
         if (!this.showModal) {
-            this.insights = null; // Limpa os dados ao fechar
+            this.insights = null;
         }
     }
 
@@ -122,7 +123,14 @@ export class AIComponent implements OnInit, OnDestroy {
         this.chatInput = '';
         this.isChatLoading = true;
 
-        const prompt = this.buildChatPrompt(userMessage);
+        const prompt = PROMPTS.CHAT({
+            transactions: this.transactions.map(t => ({
+                value: t.value,
+                description: t.description,
+                category: t.category || ''
+            })),
+            userQuestion: userMessage
+        });
 
         try {
             const aiResponse = await this.aiService.callAI({contents: [{role: "user", parts: [{text: prompt}]}]});
@@ -140,11 +148,5 @@ export class AIComponent implements OnInit, OnDestroy {
             lastMessage.content = text;
             lastMessage.isTyping = false;
         }
-    }
-
-    private buildChatPrompt(userQuestion: string): string {
-        let transactions = this.transactions.slice(0, 50);
-        const context = JSON.stringify(transactions.map(t => ({v: t.value, d: t.description, c: t.category})));
-        return `Você é um assistente financeiro. Responda à pergunta do utilizador com base nos seguintes dados de transações (em formato JSON). Seja conciso, amigável e use o formato de moeda do Brasil (R$).\nDados das Transações: ${context}\n\nPergunta do Utilizador: "${userQuestion}"`;
     }
 }
