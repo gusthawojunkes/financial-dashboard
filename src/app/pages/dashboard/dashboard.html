@@ -1,5 +1,4 @@
 <div *ngIf="transactions.length > 0; else noData" class="dashboard-grid">
-    <!-- Summary Cards -->
     <div class="summary-cards">
         <div class="card summary-card">
             <div class="summary-icon revenue-icon">
@@ -44,7 +43,6 @@
         </div>
     </div>
 
-    <!-- Chart -->
     <div class="card">
         <div class="chart-header">
             <h2 class="chart-title">{{ chartTitle }}</h2>
@@ -57,7 +55,6 @@
         </div>
     </div>
 
-    <!-- Transactions Table -->
     <div class="card">
         <h2 class="table-title">Detalhes das Transações</h2>
         <div class="table-wrapper">
@@ -71,17 +68,19 @@
                 </tr>
                 </thead>
                 <tbody>
-                <!-- Modificado para usar paginatedTransactions -->
                 <tr *ngFor="let tx of paginatedTransactions" [class.revenue-row]="tx.value > 0"
                     [class.expense-row]="tx.value < 0">
-                    <td>{{ tx.description }}</td>
+                    <td>
+                        <img *ngIf="tx.institution" [src]="getBankIcon(tx.institution)" [alt]="tx.institution"
+                             width="24" height="24" style="vertical-align:middle;margin-right:6px;">
+                        {{ tx.description }}
+                    </td>
                     <td>{{ tx.transactionTime }}</td>
                     <td><span class="category-tag">{{ tx.category }}</span></td>
                     <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0">
                         {{ tx.value | currency:'BRL' }}
                     </td>
                 </tr>
-                <!-- Mensagem se não houver transações na página atual, mas houver transações no geral -->
                 <tr *ngIf="transactions && transactions.length > 0 && (!paginatedTransactions || paginatedTransactions.length === 0)">
                     <td colspan="4" style="text-align: center;">Nenhuma transação para exibir nesta página.</td>
                 </tr>
@@ -89,7 +88,6 @@
             </table>
         </div>
 
-        <!-- Controles de Paginação -->
         <div class="pagination-controls" *ngIf="transactions && transactions.length > 0 && totalPages > 1">
             <div class="items-per-page-selector">
                 <label for="itemsPerPageSelect">Itens por página: </label>
@@ -111,11 +109,9 @@
     </div>
 </div>
 
-<!-- Template para quando não há dados -->
 <ng-template #noData>
     <div class="card no-data-container">
         <h2>Nenhum dado para exibir</h2>
         <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
     </div>
 </ng-template>
-
