@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Transaction} from './data';
+import {Transaction} from '../models/transaction.model';
 import {environment} from '../../environments/environment';
 import {PROMPTS} from '../constants/prompts';
 

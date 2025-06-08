@@ -11,10 +11,10 @@ import {
 } from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {Subscription} from 'rxjs';
-import {FileParserService, Transaction} from '../../services/data';
-import {DataPersistenceService} from '../../services/data-persistence.service';
+import {FileParserService, Transaction} from '../../services/parser';
 import Chart from 'chart.js/auto';
 import {FormsModule} from '@angular/forms';
+import {TransactionService} from '../../services/transaction';
 
 @Component({
     selector: 'app-dashboard',
@@ -43,7 +43,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     constructor(
         private fileParserService: FileParserService,
         private cdr: ChangeDetectorRef,
-        private dataPersistence: DataPersistenceService
+        private transactionService: TransactionService,
     ) {
     }
 
@@ -55,19 +55,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     }
 
     ngOnInit(): void {
-        // Carrega dados persistidos do localStorage ao iniciar
-        const keys = this.dataPersistence.getAllKeys();
-        let allPersistedTransactions: Transaction[] = [];
-        keys.forEach(key => {
-            const transactions = this.dataPersistence.getItem<Transaction[]>(key);
-            if (transactions && Array.isArray(transactions)) {
-                allPersistedTransactions = allPersistedTransactions.concat(transactions);
+        this.transactionService.getAll().subscribe(transactions => {
+            if (transactions.length > 0) {
+                this.transactionService.updateTransactions(transactions);
             }
         });
-        if (allPersistedTransactions.length > 0) {
-            this.fileParserService.updateTransactions(allPersistedTransactions);
-        }
-        this.transactionsSubscription = this.fileParserService.currentTransactions.subscribe(transactions => {
+        this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
             if (transactions.length > 0) {
                 this.calculateSummary();
@@ -80,7 +73,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     }
 
     ngAfterViewInit(): void {
-        // Verificamos se temos transações e criamos o gráfico após a view estar inicializada
         if (this.transactions.length > 0) {
             setTimeout(() => {
                 this.createCategoryChart();

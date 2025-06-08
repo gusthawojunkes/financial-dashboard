@@ -1,43 +1,16 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject} from 'rxjs';
 import {environment} from '../../environments/environment';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
-
-export interface Transaction {
-    value: number;
-    description: string;
-    transactionTime: string;
-    category?: string;
-    institutionUUID: string;
-    institution: string;
-    cardType: string;
-}
-
-export interface ProcessFileParams {
-    institution: string;
-    fileType: string;
-    invoiceType: string;
-    csvSeparator?: string;
-    datetimePattern?: string;
-}
+import {Transaction, ProcessFileParams} from '../models/transaction.model';
 
 @Injectable({
     providedIn: 'root'
 })
 export class FileParserService {
-    private apiUrl = `${environment.apiBaseUrl}/api/v1/file/process`;
-    private transactionsSource = new BehaviorSubject<Transaction[]>([]);
-    currentTransactions = this.transactionsSource.asObservable();
+    private apiUrl = `${environment.fileParserBaseUrl}/api/v1/file/process`;
 
     constructor(private http: HttpClient) {
-    }
-
-    updateTransactions(transactions: Transaction[]) {
-        transactions.map((transaction) => {
-            transaction.transactionTime = transaction.transactionTime.split(' ')[0]
-        })
-        this.transactionsSource.next(transactions);
     }
 
     processFile(file: File, params: ProcessFileParams): Observable<Transaction[]> {

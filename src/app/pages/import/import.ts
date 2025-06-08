@@ -2,15 +2,12 @@ import {Component, OnInit} from '@angular/core';
 import {Router} from '@angular/router';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {FileParserService} from '../../services/data';
+import {FileParserService} from '../../services/parser';
 import {AIService} from '../../services/ai';
 import {SafeHtmlPipe} from '../../safe-html.pipe';
-import {DataPersistenceService} from '../../services/data-persistence.service';
-
-interface Bank {
-    name: string;
-    icon: string;
-}
+import {LocalStorageService} from '../../services/local-storage';
+import {TransactionService} from '../../services/transaction';
+import {Bank} from '../../models/bank.model';
 
 @Component({
     selector: 'app-import',
@@ -56,28 +53,17 @@ export class ImportComponent implements OnInit {
     step2Done = false;
 
     selectedFiles: File[] = [];
-    persistedData: any[] = [];
 
     constructor(
         private router: Router,
         private fileParserService: FileParserService,
         private aiService: AIService,
-        private dataPersistence: DataPersistenceService
+        private localStorageService: LocalStorageService,
+        private transactionService: TransactionService
     ) {
     }
 
     ngOnInit(): void {
-        this.loadPersistedData();
-    }
-
-    async loadPersistedData() {
-        // Exemplo: Carrega todos os dados persistidos ao iniciar
-        const keys = this.dataPersistence.getAllKeys();
-        this.persistedData = keys.map(key => ({
-            institutionUUID: key,
-            data: this.dataPersistence.getItem(key)
-        }));
-        // Você pode adaptar para popular a tela conforme necessário
     }
 
     onFileSelected(event: Event): void {
@@ -188,15 +174,8 @@ export class ImportComponent implements OnInit {
             this.loadingMessage = 'Categorizando os seus gastos';
             const categorizedTransactions = await this.aiService.categorizeTransactions(allTransactions);
             this.step2Done = true;
-            this.fileParserService.updateTransactions(categorizedTransactions);
-
-            // Salva os dados processados no localStorage usando institutionUUID
-            let institutionUUID = categorizedTransactions[0]?.institution;
-            if (!institutionUUID) {
-                institutionUUID = this.selectedBank.name;
-            }
-            // Adiciona novos registros sem duplicar institutionUUID
-            this.dataPersistence.addUniqueItems(institutionUUID, categorizedTransactions);
+            this.transactionService.updateTransactions(categorizedTransactions);
+            this.localStorageService.saveTransactions(categorizedTransactions[0]?.institution ?? this.selectedBank.name, categorizedTransactions);
 
             this.isLoading = false;
             await this.router.navigate(['/dashboard']);

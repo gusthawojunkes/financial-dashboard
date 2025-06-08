@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 @Injectable({
     providedIn: 'root',
 })
-export class DataPersistenceService {
+export class LocalStorageService {
     private storageKeyPrefix = 'financial-dashboard:';
 
     setItem<T>(key: string, value: T): void {
@@ -25,9 +25,6 @@ export class DataPersistenceService {
             .map(k => k.replace(this.storageKeyPrefix, ''));
     }
 
-    /**
-     * Adiciona novos registros ao storage, evitando duplicados por institutionUUID
-     */
     addUniqueItems<T extends { institutionUUID: string }>(key: string, newItems: T[]): void {
         const existing: T[] = this.getItem<T[]>(key) || [];
         const existingIds = new Set(existing.map(item => item.institutionUUID));
@@ -39,5 +36,9 @@ export class DataPersistenceService {
             }
         }
         this.setItem(key, merged);
+    }
+
+    saveTransactions(institution: string, transactions: any[]): void {
+        this.addUniqueItems(institution, transactions);
     }
 }
