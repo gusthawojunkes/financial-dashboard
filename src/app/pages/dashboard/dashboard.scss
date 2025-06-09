@@ -70,15 +70,63 @@
 /* Gráfico */
 .chart-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    gap: 16px;
 }
 
 .chart-title {
-    font-size: 1.25rem;
+    margin: 0;
+    font-size: 1.3rem;
     font-weight: 600;
-    color: #111827;
+}
+
+.chart-view-selector {
+    display: flex;
+    gap: 8px;
+}
+
+.selector-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    background: #f3f4f6;
+    color: #222;
+    font-weight: 500;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+
+.selector-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 18px;
+    width: 18px;
+    margin-right: 2px;
+}
+
+.selector-btn .material-icons {
+    font-size: 1.2em;
+}
+
+.selector-btn.selected, .selector-btn:hover {
+    background: #2563eb;
+    color: #fff;
+}
+
+.selector-btn.selected .selector-icon svg,
+.selector-btn:hover .selector-icon svg {
+    fill: #fff !important;
+    color: #fff !important;
+}
+
+.selector-btn .selector-icon svg {
+    transition: fill 0.2s, color 0.2s;
+    display: block;
 }
 
 .back-button {
@@ -97,6 +145,15 @@
     position: relative;
     height: 400px;
     width: 100%;
+}
+
+.bank-chart-container {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 340px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Tabela de Transações */

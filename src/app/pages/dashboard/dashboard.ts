@@ -39,10 +39,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     public itemsPerPageOptions: number[] = [8, 16, 24];
     public totalPages: number = 0;
 
+    selectedView: 'categoria' | 'banco' = 'categoria';
+
     @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
 
     constructor(
-        private fileParserService: FileParserService,
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService,
     ) {
@@ -55,16 +56,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         }
     }
 
-    ngOnInit(): void {
-        this.transactionService.getAll().subscribe(transactions => {
-            if (transactions.length > 0) {
-                this.transactionService.updateTransactions(transactions);
-            }
-        });
+    async ngOnInit(): Promise<void> {
+        setTimeout(() => {
+            this.createChartByView();
+        }, 500); // workararound for initial chart rendering issue
+        await this.transactionService.loadTransactions();
         this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
             if (transactions.length > 0) {
                 this.calculateSummary();
+                this.createChartByView();
             }
             this.cdr.detectChanges();
             if (this.transactions && this.transactions.length > 0) {
@@ -76,7 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     ngAfterViewInit(): void {
         if (this.transactions.length > 0) {
             setTimeout(() => {
-                this.createCategoryChart();
+                this.createChartByView();
             }, 0);
         }
     }
@@ -142,6 +143,26 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         };
     }
 
+    setView(view: 'categoria' | 'banco'): void {
+        if (this.selectedView !== view) {
+            this.selectedView = view;
+            this.createChartByView();
+        }
+    }
+
+    createChartByView(): void {
+        if (this.chartInstance) {
+            this.chartInstance.destroy();
+        }
+        if (this.selectedView === 'categoria') {
+            this.createCategoryChart();
+            this.chartTitle = 'Despesas por Categoria';
+        } else {
+            this.createBankChart();
+            this.chartTitle = 'Despesas por Banco';
+        }
+    }
+
     createCategoryChart(): void {
         this.chartTitle = 'Despesas por Categoria';
         this.isDetailView = false;
@@ -192,6 +213,47 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
                 data: data,
                 backgroundColor: '#3b82f6'
             }]
+        });
+    }
+
+    createBankChart(): void {
+        if (!this.mainChartRef) return;
+        const ctx = this.mainChartRef.nativeElement.getContext('2d');
+        if (!ctx) return;
+        const bankTotals: { [bank: string]: number } = {};
+        this.transactions.filter(t => t.value < 0).forEach(t => {
+            const bank = t.institution || 'Outro';
+            bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs(t.value);
+        });
+        const labels = Object.keys(bankTotals);
+        const data = Object.values(bankTotals);
+        const bankColors: { [bank: string]: string } = {
+            'nubank': '#8A05BE', // Roxo Nubank
+            'itau': '#FF6600',   // Laranja Itaú
+            'itaú': '#FF6600',   // Laranja Itaú (acentuado)
+            'caixa': '#1E4CA1',  // Azul Caixa
+            'caixa econômica': '#1E4CA1',
+            'c6': '#333333',     // Cinza escuro C6
+            'c6 bank': '#333333' // Cinza escuro C6 Bank
+        };
+        const backgroundColor = labels.map(label => {
+            const key = label.toLowerCase();
+            return bankColors[key] || '#BDBDBD';
+        });
+        this.chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: backgroundColor,
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: {position: 'bottom'},
+                }
+            }
         });
     }
 
@@ -262,3 +324,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         }
     }
 }
+
+
+

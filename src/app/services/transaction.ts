@@ -9,7 +9,7 @@ import {environment} from '../../environments/environment';
     providedIn: 'root'
 })
 export class TransactionService {
-    private apiUrl = `${environment.transactionsServiceBaseUrl}/v1/transactions`;
+    private apiUrl = `${environment.transactionsServiceBaseUrl}/transactions`;
     private transactionsSource = new BehaviorSubject<Transaction[]>([]);
     currentTransactions = this.transactionsSource.asObservable();
 
@@ -27,8 +27,8 @@ export class TransactionService {
     }
 
     getAll(): Observable<Transaction[]> {
-        //return this.http.get<Transaction[]>(`${this.apiUrl}`);
-        return this.getAllFromLocal();
+        return this.http.get<Transaction[]>(`${this.apiUrl}`);
+        //return this.getAllFromLocal();
     }
 
     getAllFromLocal(): Observable<Transaction[]> {
@@ -47,4 +47,13 @@ export class TransactionService {
         });
     }
 
+    async loadTransactions() {
+        this.getAll().subscribe(transactions => {
+            if (transactions.length > 0) {
+                this.updateTransactions(transactions);
+            }
+        });
+    }
+
 }
+
