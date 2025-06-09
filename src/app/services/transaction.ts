@@ -28,7 +28,6 @@ export class TransactionService {
 
     getAll(): Observable<Transaction[]> {
         return this.http.get<Transaction[]>(`${this.apiUrl}`);
-        //return this.getAllFromLocal();
     }
 
     getAllFromLocal(): Observable<Transaction[]> {
@@ -56,4 +55,3 @@ export class TransactionService {
     }
 
 }
-

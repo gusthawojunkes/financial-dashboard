@@ -95,6 +95,12 @@
                 </div>
             </div>
 
+            <!-- Checkbox: Categorizar com IA -->
+            <div class="checkbox-container">
+                <input type="checkbox" id="categorize-with-ai" [(ngModel)]="categorizeWithAI" name="categorizeWithAI">
+                <label for="categorize-with-ai">Categorizar transações com IA</label>
+            </div>
+
             <!-- Botão de Submissão -->
             <div>
                 <button type="submit" class="btn btn-primary" [disabled]="isLoading">

@@ -53,6 +53,7 @@ export class ImportComponent implements OnInit {
     step2Done = false;
 
     selectedFiles: File[] = [];
+    categorizeWithAI: boolean = true;
 
     constructor(
         private router: Router,
@@ -171,12 +172,17 @@ export class ImportComponent implements OnInit {
                 });
             }
             this.step1Done = true;
-            this.loadingMessage = 'Categorizando os seus gastos';
-            const categorizedTransactions = await this.aiService.categorizeTransactions(allTransactions);
-            this.step2Done = true;
-            this.transactionService.updateTransactions(categorizedTransactions);
-            this.localStorageService.saveTransactions(categorizedTransactions[0]?.institution ?? this.selectedBank.name, categorizedTransactions);
-
+            if (this.categorizeWithAI) {
+                this.loadingMessage = 'Categorizando os seus gastos';
+                const categorizedTransactions = await this.aiService.categorizeTransactions(allTransactions);
+                this.step2Done = true;
+                this.transactionService.updateTransactions(categorizedTransactions);
+                this.localStorageService.saveTransactions(categorizedTransactions[0]?.institution ?? this.selectedBank.name, categorizedTransactions);
+            } else {
+                this.step2Done = true;
+                this.transactionService.updateTransactions(allTransactions);
+                this.localStorageService.saveTransactions(allTransactions[0]?.institution ?? this.selectedBank.name, allTransactions);
+            }
             this.isLoading = false;
             await this.router.navigate(['/dashboard']);
         } catch (error) {
