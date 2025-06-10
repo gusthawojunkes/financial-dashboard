@@ -228,12 +228,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const data = Object.values(bankTotals);
         const bankColors: { [bank: string]: string } = {
             'nubank': '#8A05BE', // Roxo Nubank
-            'itau': '#FF6600',   // Laranja Itaú
-            'itaú': '#FF6600',   // Laranja Itaú (acentuado)
-            'caixa': '#1E4CA1',  // Azul Caixa
-            'caixa econômica': '#1E4CA1',
-            'c6': '#333333',     // Cinza escuro C6
-            'c6 bank': '#333333' // Cinza escuro C6 Bank
+            'wise': '#9FE870'
         };
         const backgroundColor = labels.map(label => {
             const key = label.toLowerCase();
@@ -318,6 +313,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             case 'caixa':
             case 'caixa econômica':
                 return '/assets/icons/banks/caixa-logo-2023.svg';
+            case 'wise':
+                return '/assets/icons/banks/wise-logo-mini.png';
             default:
                 return '';
         }
