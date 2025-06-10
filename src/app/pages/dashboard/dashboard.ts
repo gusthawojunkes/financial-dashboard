@@ -58,7 +58,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     async ngOnInit(): Promise<void> {
         setTimeout(() => {
             this.createChartByView();
-        }, 500); // workararound for initial chart rendering issue
+        }, 500); // workaround for initial chart rendering issue
         await this.transactionService.loadTransactions();
         this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
@@ -319,7 +319,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
                 return '';
         }
     }
+
+    getCurrencyFlag(currency: string): string {
+        const map: { [key: string]: string } = {
+            'BRL': 'br',
+            'CAD': 'ca',
+            'USD': 'us',
+            'EUR': 'eu',
+        };
+        const code = map[currency.toUpperCase()] || 'br'; // Default to Brazil if not found
+        return `/assets/icons/flags/${code}.svg`;
+    }
 }
-
-
 

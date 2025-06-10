@@ -102,6 +102,7 @@
                     <th>Descrição</th>
                     <th>Data</th>
                     <th>Categoria</th>
+                    <th>Moeda</th>
                     <th class="text-right">Valor</th>
                 </tr>
                 </thead>
@@ -115,8 +116,12 @@
                     </td>
                     <td>{{ tx.transactionTime }}</td>
                     <td><span class="category-tag">{{ tx.category }}</span></td>
+                    <td>
+                        <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"
+                             width="40" height="40" style="vertical-align:middle;">
+                    </td>
                     <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0">
-                        {{ tx.value | currency:'BRL' }}
+                        {{ tx.value | currency:tx.currency }}
                     </td>
                 </tr>
                 <tr *ngIf="transactions && transactions.length > 0 && (!paginatedTransactions || paginatedTransactions.length === 0)">
@@ -153,3 +158,5 @@
         <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
     </div>
 </ng-template>
+
+
