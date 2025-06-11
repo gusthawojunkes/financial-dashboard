@@ -179,7 +179,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         }
         const spendingByCategory = expenses.reduce((acc, tx) => {
             const category = tx.category || 'Outros';
-            acc[category] = (acc[category] || 0) + Math.abs(tx.value);
+            acc[category] = (acc[category] || 0) + Math.abs((this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value));
             return acc;
         }, {} as { [key: string]: number });
 
@@ -219,7 +219,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
         const transactionsInCategory = this.transactions.filter(tx => tx.category === category && tx.value < 0);
         const spendingByDescription = transactionsInCategory.reduce((acc, tx) => {
-            acc[tx.description] = (acc[tx.description] || 0) + Math.abs(tx.value);
+            acc[tx.description] = (acc[tx.description] || 0) + Math.abs((this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value));
             return acc;
         }, {} as { [key: string]: number });
 
@@ -243,7 +243,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const bankTotals: { [bank: string]: number } = {};
         this.transactions.filter(t => t.value < 0).forEach(t => {
             const bank = t.institution || 'Outro';
-            bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs(t.value);
+            bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs((this.transactionService.convertToBRL(t.value, t.currency) || t.value));
         });
         const labels = Object.keys(bankTotals);
         const data = Object.values(bankTotals);
