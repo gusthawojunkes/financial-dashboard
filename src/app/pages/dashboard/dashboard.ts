@@ -44,6 +44,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
     @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
 
+    private categoryColors: { [category: string]: string } = {};
+    public hasExpenses: boolean = true;
+
     constructor(
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService,
@@ -132,18 +135,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     calculateSummary(): void {
         const revenue = this.transactions
             .filter(t => t.value > 0)
-            .map(transaction => {
-                transaction.value = this.transactionService.convertToBRL(transaction.value, transaction.currency) || transaction.value;
-                return transaction;
-            })
-            .reduce((sum, t) => sum + t.value, 0);
+            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
         const expenses = this.transactions
-            .map(transaction => {
-                transaction.value = this.transactionService.convertToBRL(transaction.value, transaction.currency) || transaction.value;
-                return transaction;
-            })
             .filter(t => t.value < 0)
-            .reduce((sum, t) => sum + t.value, 0);
+            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
 
         this.summary = {
             revenue: revenue,
@@ -163,12 +158,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
-        if (this.selectedView === 'categoria') {
-            this.createCategoryChart();
-            this.chartTitle = 'Despesas por Categoria';
-        } else {
+        if (this.selectedView === 'banco') {
             this.createBankChart();
             this.chartTitle = 'Despesas por Banco';
+        } else {
+            this.createCategoryChart();
+            this.chartTitle = 'Despesas por Categoria';
         }
     }
 
@@ -177,6 +172,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         this.isDetailView = false;
 
         const expenses = this.transactions.filter(t => t.value < 0);
+        this.hasExpenses = expenses.length > 0;
+        if (!this.hasExpenses) {
+            if (this.chartInstance) this.chartInstance.destroy();
+            return;
+        }
         const spendingByCategory = expenses.reduce((acc, tx) => {
             const category = tx.category || 'Outros';
             acc[category] = (acc[category] || 0) + Math.abs(tx.value);
@@ -185,13 +185,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
         const labels = Object.keys(spendingByCategory);
         const data = Object.values(spendingByCategory);
+        const colors = this.generateColors(labels.length);
+        // Store category-color mapping
+        this.categoryColors = {};
+        labels.forEach((cat, idx) => {
+            this.categoryColors[cat] = colors[idx];
+        });
 
         this.drawChart('pie', {
             labels: labels,
             datasets: [{
                 label: 'Despesas',
                 data: data,
-                backgroundColor: this.generateColors(labels.length),
+                backgroundColor: colors,
                 hoverOffset: 4
             }]
         }, (_, elements) => {
@@ -200,6 +206,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
                 this.createDetailsChart(clickedCategory);
             }
         });
+    }
+
+    getCategoryColor(category: string | undefined): string | null {
+        if (!category) return null;
+        return this.categoryColors[category] || null;
     }
 
     createDetailsChart(category: string): void {

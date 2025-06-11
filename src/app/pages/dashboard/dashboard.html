@@ -89,7 +89,10 @@
             </button>
         </div>
         <div class="chart-container" [ngClass]="{'bank-chart-container': selectedView === 'banco'}">
-            <canvas #mainChart id="main-chart"></canvas>
+            <div *ngIf="!hasExpenses" class="no-expenses-message">
+                Não há despesas para exibir. 😀
+            </div>
+            <canvas #mainChart *ngIf="hasExpenses" id="main-chart"></canvas>
         </div>
     </div>
 
@@ -115,7 +118,9 @@
                         {{ tx.description }}
                     </td>
                     <td>{{ tx.transactionTime }}</td>
-                    <td><span class="category-tag">{{ tx.category }}</span></td>
+                    <td><span class="category-tag"
+                              [ngStyle]="{'background-color': getCategoryColor(tx.category || '') || '#e5e7eb', 'color': '#fff'}">{{ tx.category || 'Outros' }}</span>
+                    </td>
                     <td>
                         <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"
                              width="40" height="40" style="vertical-align:middle;">
@@ -162,3 +167,4 @@
         <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
     </div>
 </ng-template>
+
