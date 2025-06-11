@@ -45,6 +45,10 @@ export class ImportComponent implements OnInit {
         {
             name: 'Caixa',
             icon: '<img src="/assets/icons/banks/caixa-logo-2023.svg" alt="Caixa" width="40" height="40">'
+        },
+        {
+            name: 'Wise',
+            icon: '<img src="/assets/icons/banks/wise-logo.png" alt="Wise" width="40" height="40">'
         }
     ];
     selectedBank: Bank = this.banks[0];

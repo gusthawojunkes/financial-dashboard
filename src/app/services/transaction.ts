@@ -54,4 +54,18 @@ export class TransactionService {
         });
     }
 
+    private currencyRates: { [key: string]: number } = {
+        'USD': 5.2,
+        'EUR': 5.6,
+        'CAD': 4,
+        'BRL': 1
+    };
+
+    convertToBRL(value: number, currency: string): number | null {
+        if (currency?.toUpperCase() === 'BRL') return null;
+        const rate = this.currencyRates[currency?.toUpperCase()];
+        if (!rate) return null;
+        return value * rate;
+    }
+
 }

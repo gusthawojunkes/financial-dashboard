@@ -166,6 +166,7 @@
 
 .table-wrapper {
     overflow-x: auto;
+    overflow: visible; /* Permite que tooltips ultrapassem a tabela */
 }
 
 table {
@@ -318,6 +319,28 @@ td {
     border-color: #ddd;
 }
 
+/* Estilo para Tooltip Customizado */
+.custom-tooltip {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    transform: translateX(-50%) translateY(8px);
+    background: #222;
+    color: #fff;
+    padding: 7px 16px;
+    border-radius: 7px;
+    font-size: 0.98rem;
+    font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 1.5px 6px rgba(0, 0, 0, 0.10);
+    white-space: nowrap;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0.97;
+    transition: opacity 0.2s;
+    max-width: 260px;
+    text-align: center;
+}
+
 /* Ajustes para telas menores, se necessário */
 @media (max-width: 600px) {
     .pagination-controls {
@@ -338,3 +361,4 @@ td {
         margin: 0 10px;
     }
 }
+

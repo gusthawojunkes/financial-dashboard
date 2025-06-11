@@ -6,6 +6,7 @@ export interface Transaction {
     institutionUUID: string;
     institution: string;
     cardType: string;
+    currency: string;
 }
 
 export interface ProcessFileParams {

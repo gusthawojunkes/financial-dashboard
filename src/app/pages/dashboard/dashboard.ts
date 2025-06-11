@@ -40,7 +40,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
     selectedView: 'categoria' | 'banco' = 'categoria';
 
+    hoveredIndex: number | null = null;
+
     @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
+
+    private categoryColors: { [category: string]: string } = {};
+    public hasExpenses: boolean = true;
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -58,7 +63,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     async ngOnInit(): Promise<void> {
         setTimeout(() => {
             this.createChartByView();
-        }, 500); // workararound for initial chart rendering issue
+        }, 500); // workaround for initial chart rendering issue
         await this.transactionService.loadTransactions();
         this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
@@ -130,10 +135,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     calculateSummary(): void {
         const revenue = this.transactions
             .filter(t => t.value > 0)
-            .reduce((sum, t) => sum + t.value, 0);
+            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
         const expenses = this.transactions
             .filter(t => t.value < 0)
-            .reduce((sum, t) => sum + t.value, 0);
+            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
 
         this.summary = {
             revenue: revenue,
@@ -153,12 +158,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
-        if (this.selectedView === 'categoria') {
-            this.createCategoryChart();
-            this.chartTitle = 'Despesas por Categoria';
-        } else {
+        if (this.selectedView === 'banco') {
             this.createBankChart();
             this.chartTitle = 'Despesas por Banco';
+        } else {
+            this.createCategoryChart();
+            this.chartTitle = 'Despesas por Categoria';
         }
     }
 
@@ -167,21 +172,32 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         this.isDetailView = false;
 
         const expenses = this.transactions.filter(t => t.value < 0);
+        this.hasExpenses = expenses.length > 0;
+        if (!this.hasExpenses) {
+            if (this.chartInstance) this.chartInstance.destroy();
+            return;
+        }
         const spendingByCategory = expenses.reduce((acc, tx) => {
             const category = tx.category || 'Outros';
-            acc[category] = (acc[category] || 0) + Math.abs(tx.value);
+            acc[category] = (acc[category] || 0) + Math.abs((this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value));
             return acc;
         }, {} as { [key: string]: number });
 
         const labels = Object.keys(spendingByCategory);
         const data = Object.values(spendingByCategory);
+        const colors = this.generateColors(labels.length);
+        // Store category-color mapping
+        this.categoryColors = {};
+        labels.forEach((cat, idx) => {
+            this.categoryColors[cat] = colors[idx];
+        });
 
         this.drawChart('pie', {
             labels: labels,
             datasets: [{
                 label: 'Despesas',
                 data: data,
-                backgroundColor: this.generateColors(labels.length),
+                backgroundColor: colors,
                 hoverOffset: 4
             }]
         }, (_, elements) => {
@@ -192,13 +208,18 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         });
     }
 
+    getCategoryColor(category: string | undefined): string | null {
+        if (!category) return null;
+        return this.categoryColors[category] || null;
+    }
+
     createDetailsChart(category: string): void {
         this.chartTitle = `Detalhes de ${category}`;
         this.isDetailView = true;
 
         const transactionsInCategory = this.transactions.filter(tx => tx.category === category && tx.value < 0);
         const spendingByDescription = transactionsInCategory.reduce((acc, tx) => {
-            acc[tx.description] = (acc[tx.description] || 0) + Math.abs(tx.value);
+            acc[tx.description] = (acc[tx.description] || 0) + Math.abs((this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value));
             return acc;
         }, {} as { [key: string]: number });
 
@@ -222,18 +243,13 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const bankTotals: { [bank: string]: number } = {};
         this.transactions.filter(t => t.value < 0).forEach(t => {
             const bank = t.institution || 'Outro';
-            bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs(t.value);
+            bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs((this.transactionService.convertToBRL(t.value, t.currency) || t.value));
         });
         const labels = Object.keys(bankTotals);
         const data = Object.values(bankTotals);
         const bankColors: { [bank: string]: string } = {
             'nubank': '#8A05BE', // Roxo Nubank
-            'itau': '#FF6600',   // Laranja Itaú
-            'itaú': '#FF6600',   // Laranja Itaú (acentuado)
-            'caixa': '#1E4CA1',  // Azul Caixa
-            'caixa econômica': '#1E4CA1',
-            'c6': '#333333',     // Cinza escuro C6
-            'c6 bank': '#333333' // Cinza escuro C6 Bank
+            'wise': '#9FE870'
         };
         const backgroundColor = labels.map(label => {
             const key = label.toLowerCase();
@@ -318,11 +334,28 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             case 'caixa':
             case 'caixa econômica':
                 return '/assets/icons/banks/caixa-logo-2023.svg';
+            case 'wise':
+                return '/assets/icons/banks/wise-logo-mini.png';
             default:
                 return '';
         }
     }
+
+    getCurrencyFlag(currency: string): string {
+        const map: { [key: string]: string } = {
+            'BRL': 'br',
+            'CAD': 'ca',
+            'USD': 'us',
+            'EUR': 'eu',
+        };
+        const code = map[currency.toUpperCase()] || 'br'; // Default to Brazil if not found
+        return `/assets/icons/flags/${code}.svg`;
+    }
+
+    getConvertedTooltip(tx: Transaction): string | null {
+        if (!tx.currency || tx.currency.toUpperCase() === 'BRL') return null;
+        const converted = this.transactionService.convertToBRL(tx.value, tx.currency);
+        if (!converted) return null;
+        return `${converted.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`;
+    }
 }
-
-
-
