@@ -245,10 +245,15 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             const bank = t.institution || 'Outro';
             bankTotals[bank] = (bankTotals[bank] || 0) + Math.abs((this.transactionService.convertToBRL(t.value, t.currency) || t.value));
         });
-        const labels = Object.keys(bankTotals);
-        const data = Object.values(bankTotals);
+        const labels = Object.keys(bankTotals).map(label => {
+            if (label.toLowerCase() === 'c6_bank' || label.toLowerCase() === 'c6bank' || label.toLowerCase() === 'c6 bank') {
+                return 'C6 Bank';
+            }
+            return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+        });
+        const data = Object.values(bankTotals)
         const bankColors: { [bank: string]: string } = {
-            'nubank': '#8A05BE', // Roxo Nubank
+            'nubank': '#8A05BE',
             'wise': '#9FE870'
         };
         const backgroundColor = labels.map(label => {
@@ -327,7 +332,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
                 return '/assets/icons/banks/nubank-logo-2021.svg';
             case 'c6 bank':
             case 'c6':
-                return '/assets/icons/banks/c6-bank-logo.svg';
+            case 'c6bank':
+            case 'c6_bank':
+                return '/assets/icons/banks/c6-bank-logo-mini.jpeg';
             case 'itau':
             case 'itaú':
                 return '/assets/icons/banks/itau-logo-2023.svg';

@@ -36,7 +36,7 @@ export class ImportComponent implements OnInit {
         },
         {
             name: 'C6 Bank',
-            icon: '<img src="/assets/icons/banks/c6-bank-logo.svg" alt="C6 Bank" width="40" height="40">'
+            icon: '<img src="/assets/icons/banks/c6-bank-logo-mini.jpeg" alt="C6 Bank" width="32" height="32">'
         },
         {
             name: 'Itaú',
