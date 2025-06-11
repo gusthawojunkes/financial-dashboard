@@ -107,7 +107,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr *ngFor="let tx of paginatedTransactions" [class.revenue-row]="tx.value > 0"
+                <tr *ngFor="let tx of paginatedTransactions; let i = index" [class.revenue-row]="tx.value > 0"
                     [class.expense-row]="tx.value < 0">
                     <td>
                         <img *ngIf="tx.institution" [src]="getBankIcon(tx.institution)" [alt]="tx.institution"
@@ -120,8 +120,12 @@
                         <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"
                              width="40" height="40" style="vertical-align:middle;">
                     </td>
-                    <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0">
+                    <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0"
+                        (mouseenter)="hoveredIndex = i" (mouseleave)="hoveredIndex = null" style="position:relative;">
                         {{ tx.value | currency:tx.currency }}
+                        <div *ngIf="hoveredIndex === i && getConvertedTooltip(tx)" class="custom-tooltip">
+                            {{ getConvertedTooltip(tx) }}
+                        </div>
                     </td>
                 </tr>
                 <tr *ngIf="transactions && transactions.length > 0 && (!paginatedTransactions || paginatedTransactions.length === 0)">
@@ -158,5 +162,3 @@
         <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
     </div>
 </ng-template>
-
-

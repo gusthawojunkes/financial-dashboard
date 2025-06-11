@@ -40,6 +40,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
 
     selectedView: 'categoria' | 'banco' = 'categoria';
 
+    hoveredIndex: number | null = null;
+
     @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
 
     constructor(
@@ -130,8 +132,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     calculateSummary(): void {
         const revenue = this.transactions
             .filter(t => t.value > 0)
+            .map(transaction => {
+                transaction.value = this.transactionService.convertToBRL(transaction.value, transaction.currency) || transaction.value;
+                return transaction;
+            })
             .reduce((sum, t) => sum + t.value, 0);
         const expenses = this.transactions
+            .map(transaction => {
+                transaction.value = this.transactionService.convertToBRL(transaction.value, transaction.currency) || transaction.value;
+                return transaction;
+            })
             .filter(t => t.value < 0)
             .reduce((sum, t) => sum + t.value, 0);
 
@@ -330,5 +340,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const code = map[currency.toUpperCase()] || 'br'; // Default to Brazil if not found
         return `/assets/icons/flags/${code}.svg`;
     }
-}
 
+    getConvertedTooltip(tx: Transaction): string | null {
+        if (!tx.currency || tx.currency.toUpperCase() === 'BRL') return null;
+        const converted = this.transactionService.convertToBRL(tx.value, tx.currency);
+        if (!converted) return null;
+        return `${converted.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`;
+    }
+}
