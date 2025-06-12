@@ -78,6 +78,21 @@
                     </span>
                     Banco
                 </button>
+                <button
+                    (click)="showRevenueByYearChart()"
+                    class="selector-btn"
+                    title="Receitas por ano"
+                    style="margin-left: 8px;">
+                    <span class="selector-icon" aria-hidden="true"
+                          style="display:inline-flex;align-items:center;margin-right:4px;">
+                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 17V7.5M7 17V10.5M11 17V13.5M15 17V3.5" stroke="currentColor" stroke-width="2"
+                                  stroke-linecap="round"/>
+                            <circle cx="15" cy="3.5" r="1.5" fill="#22c55e"/>
+                        </svg>
+                    </span>
+                    Receitas por Ano
+                </button>
             </div>
             <button *ngIf="isDetailView" (click)="createChartByView()" class="back-button">&larr; Voltar para Opções
             </button>

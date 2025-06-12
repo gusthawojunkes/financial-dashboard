@@ -293,7 +293,40 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         });
     }
 
-    private drawChart(type: 'pie' | 'bar', data: any, onClick?: (event: any, elements: any[]) => void): void {
+    showRevenueByYearChart(): void {
+        this.chartTitle = 'Variação das Receitas por Ano';
+        this.isDetailView = false;
+        const revenues = this.transactions.filter(t => t.value > 0 && t.transactionTime);
+        if (!revenues.length) {
+            if (this.chartInstance) this.chartInstance.destroy();
+            return;
+        }
+        const revenueByYear = revenues.reduce((acc, tx) => {
+            const [date, month, year] = tx.transactionTime.split('/').map(Number);
+            const value = this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value;
+            acc[year] = (acc[year] || 0) + value;
+            return acc;
+        }, {} as { [key: string]: number });
+        const years = Object.keys(revenueByYear).filter(y => !isNaN(Number(y)));
+        const data = years.map(year => revenueByYear[year]).filter(v => !isNaN(v));
+        if (!years.length || !data.length) {
+            if (this.chartInstance) this.chartInstance.destroy();
+            return;
+        }
+        this.drawChart('line', {
+            labels: years,
+            datasets: [{
+                label: 'Receitas',
+                data: data,
+                backgroundColor: '#22c55e',
+                borderColor: '#22c55e',
+                fill: false,
+                tension: 0.3
+            }]
+        });
+    }
+
+    private drawChart(type: 'pie' | 'bar' | 'line', data: any, onClick?: (event: any, elements: any[]) => void): void {
         if (!this.mainChartRef) {
             console.error('Canvas element not found');
             return;
@@ -309,31 +342,34 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             this.chartInstance.destroy();
         }
 
-        this.chartInstance = new Chart(canvas, {
-            type: type,
-            data: data,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                onClick: onClick,
-                indexAxis: type === 'bar' ? 'y' : 'x',
-                plugins: {
-                    legend: {
-                        display: type === 'pie'
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: (context) => {
-                                const value = context.raw as number;
-                                return `${context.label}: ${value.toLocaleString('pt-BR', {
-                                    style: 'currency',
-                                    currency: 'BRL'
-                                })}`;
-                            }
+        const options: any = {
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: onClick,
+            plugins: {
+                legend: {
+                    display: type === 'pie' || type === 'line'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (context: any) => {
+                            const value = context.raw as number;
+                            return `${context.label}: ${value.toLocaleString('pt-BR', {
+                                style: 'currency',
+                                currency: 'BRL'
+                            })}`;
                         }
                     }
                 }
             }
+        };
+        if (type === 'bar') {
+            options.indexAxis = 'y';
+        }
+        this.chartInstance = new Chart(canvas, {
+            type: type,
+            data: data,
+            options: options
         });
     }
 
