@@ -47,6 +47,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
     private categoryColors: { [category: string]: string } = {};
     public hasExpenses: boolean = true;
 
+    topExpenseCategories: { category: string, value: number }[] = [];
+
     constructor(
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService,
@@ -69,6 +71,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             this.transactions = transactions;
             if (transactions.length > 0) {
                 this.calculateSummary();
+                this.updateTopExpenseCategories();
                 this.createChartByView();
             }
             this.cdr.detectChanges();
@@ -145,6 +148,19 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             expenses: Math.abs(expenses),
             balance: revenue + expenses
         };
+    }
+
+    private updateTopExpenseCategories(): void {
+        const expenses = this.transactions.filter(t => t.value < 0);
+        const spendingByCategory: { [key: string]: number } = {};
+        expenses.forEach(tx => {
+            const category = tx.category || 'Outros';
+            spendingByCategory[category] = (spendingByCategory[category] || 0) + Math.abs((this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value));
+        });
+        this.topExpenseCategories = Object.entries(spendingByCategory)
+            .map(([category, value]) => ({category, value}))
+            .sort((a, b) => b.value - a.value)
+            .slice(0, 3);
     }
 
     setView(view: 'categoria' | 'banco'): void {
@@ -364,5 +380,16 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const converted = this.transactionService.convertToBRL(tx.value, tx.currency);
         if (!converted) return null;
         return `${converted.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`;
+    }
+
+    getCategoryIcon(category: string | undefined): string {
+        if (!category) return '/assets/icons/tag.svg';
+        const lowerCategory = category.toLowerCase();
+        if (lowerCategory.includes('alimentação')) {
+            return '/assets/icons/shopping-cart.svg';
+        } else if (lowerCategory.includes('pix')) {
+            return '/assets/icons/pix.svg';
+        }
+        return '/assets/icons/tag.svg'; // Default icon
     }
 }

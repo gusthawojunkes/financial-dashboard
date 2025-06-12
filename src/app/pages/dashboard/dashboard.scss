@@ -341,6 +341,101 @@ td {
     text-align: center;
 }
 
+/* Estilos para o card Top 3 Categorias de Despesas */
+.top-categories-card {
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px #0001;
+    border-radius: 1rem;
+}
+
+.top-categories-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: #333;
+    letter-spacing: 0.5px;
+}
+
+.top-categories-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1rem;
+}
+
+.top-categories-list li {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 4px #0001;
+    padding: 1rem 0.5rem;
+    position: relative;
+    min-width: 0;
+}
+
+.top-category-icon {
+    background-color: #ef4444;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+    overflow: hidden;
+    padding: 0;
+}
+
+.top-category-icon img,
+.top-category-icon svg {
+    width: 1.6rem;
+    height: 1.6rem;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.top-category-name {
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.25rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+}
+
+.top-category-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ef4444;
+}
+
+.top-category-rank {
+    position: absolute;
+    top: -0.9rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ef4444;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 6px #0002;
+    border: 3px solid #fff;
+}
+
 /* Ajustes para telas menores, se necessário */
 @media (max-width: 600px) {
     .pagination-controls {
@@ -361,4 +456,3 @@ td {
         margin: 0 10px;
     }
 }
-
