@@ -45,7 +45,6 @@
 
     <div class="card">
         <div class="chart-header">
-            <h2 class="chart-title">Despesas por:</h2>
             <div class="chart-view-selector">
                 <button
                     [class.selected]="selectedView === 'categoria'"
@@ -67,14 +66,8 @@
                     <span class="selector-icon" aria-hidden="true"
                           style="display:inline-flex;align-items:center;margin-right:4px;">
                         <!-- Ícone de banco (colunas clássicas) -->
-                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="8" width="2" height="7" rx="1" fill="currentColor"/>
-                            <rect x="8" y="8" width="2" height="7" rx="1" fill="currentColor"/>
-                            <rect x="13" y="8" width="2" height="7" rx="1" fill="currentColor"/>
-                            <rect x="2" y="16" width="16" height="2" rx="1" fill="currentColor"/>
-                            <path d="M2 8L10 2L18 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                  stroke-linejoin="round"/>
-                        </svg>
+                        <img src="assets/icons/bank.svg" alt="Receitas Icon"
+                             width="18" height="18" style="fill:currentColor;"/>
                     </span>
                     Banco
                 </button>
@@ -85,11 +78,8 @@
                     style="margin-left: 8px;">
                     <span class="selector-icon" aria-hidden="true"
                           style="display:inline-flex;align-items:center;margin-right:4px;">
-                        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 17V7.5M7 17V10.5M11 17V13.5M15 17V3.5" stroke="currentColor" stroke-width="2"
-                                  stroke-linecap="round"/>
-                            <circle cx="15" cy="3.5" r="1.5" fill="#22c55e"/>
-                        </svg>
+                        <img src="assets/icons/calendar-days.svg" alt="Receitas Icon"
+                             width="18" height="18" style="fill:currentColor;"/>
                     </span>
                     Receitas por Ano
                 </button>
