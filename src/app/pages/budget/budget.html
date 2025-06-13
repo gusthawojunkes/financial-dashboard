@@ -1,0 +1,102 @@
+<div class="container">
+    <header>
+        <h1>Gerenciador de Orçamento</h1>
+    </header>
+
+    <div class="app-container">
+        <div class="budget-columns">
+            <div class="input-section">
+                <div class="card summary-card budget-summary-card">
+                    <div class="summary-title">Resumo do Orçamento</div>
+                    <div class="budget-summary-values">
+                        <div class="budget-summary-item">
+                            <span class="budget-summary-label">Salário</span>
+                            <span class="budget-summary-value positive">{{ salary | currency:'BRL' }}</span>
+                        </div>
+                        <div class="budget-summary-item">
+                            <span class="budget-summary-label">Despesas</span>
+                            <span class="budget-summary-value negative">{{ totalExpenses | currency:'BRL' }}</span>
+                        </div>
+                        <div class="budget-summary-item">
+                            <span class="budget-summary-label">Saldo Restante</span>
+                            <span class="budget-summary-value" [class.positive]="remaining >= 0"
+                                  [class.negative]="remaining < 0">{{ remaining | currency:'BRL' }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card summary-card budget-summary-card">
+                    <h2>Informações de Orçamento</h2>
+
+                    <div class="form-group">
+                        <label for="salary">Salário Mensal (R$)</label>
+                        <input type="number" id="salary" placeholder="Informe seu salário mensal" min="0" step="0.01"
+                               [ngModel]="salary" (ngModelChange)="setSalary($event)">
+                    </div>
+
+                    <h3>Adicionar Despesa</h3>
+                    <div class="category-inputs">
+                        <input type="text" id="expense-name" placeholder="Nome da despesa" [(ngModel)]="expenseName">
+                        <input type="number" id="expense-value" placeholder="Valor (R$)" min="0" step="0.01"
+                               [(ngModel)]="expenseValue">
+                    </div>
+                    <div class="switch-container">
+                        <span id="value-label" class="active"><i class="fas fa-dollar-sign"></i> R$</span>
+                        <label class="switch">
+                            <input type="checkbox" id="input-type-switch" [(ngModel)]="isPercentage">
+                            <span class="slider round"></span>
+                        </label>
+                        <span id="percentage-label"><i class="fas fa-percentage"></i> %</span>
+                    </div>
+                    <button id="add-expense" (click)="addExpense()">Adicionar Despesa</button>
+
+                    <div class="expenses-list" id="expenses-list">
+                        <table class="expenses-table" *ngIf="expenses.length > 0">
+                            <thead>
+                            <tr>
+                                <th>Despesa</th>
+                                <th class="text-right">Valor</th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr *ngFor="let exp of expenses; let i = index">
+                                <td>{{ exp.name }}</td>
+                                <td class="text-right">{{ exp.value | currency:'BRL' }}</td>
+                                <td class="remove-cell">
+                                    <button class="remove-btn" (click)="removeExpense(i)">
+                                        <img src="/assets/icons/trash.svg" alt="Remover Despesa">
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="no-data" *ngIf="expenses.length === 0">Nenhuma despesa adicionada</div>
+                    </div>
+
+                    <button id="reset-data" class="danger" style="margin-top: 20px;" (click)="resetData()">
+                        <i class="fas fa-trash"></i> Limpar Todos os Dados
+                    </button>
+                </div>
+            </div>
+
+            <div class="chart-section">
+                <div class="card summary-card budget-summary-card">
+                    <h2>Distribuição do Orçamento</h2>
+                    <div class="chart-container">
+                        <ng-container *ngIf="salary > 0 && (expenses.length > 0 || totalExpenses > 0); else noChart">
+                            <canvas #budgetChartCanvas></canvas>
+                        </ng-container>
+                        <ng-template #noChart>
+                            <div class="no-data-container">
+                                <h2>Nenhum dado para exibir o gráfico</h2>
+                                <p>Adicione um salário e pelo menos uma despesa para visualizar o gráfico.</p>
+                            </div>
+                        </ng-template>
+                    </div>
+                    <div id="chart-legend" class="chart-legend"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
