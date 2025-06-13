@@ -1,11 +1,11 @@
 import {Component, ChangeDetectorRef, AfterViewInit, AfterViewChecked, ElementRef, ViewChild} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import Chart from 'chart.js/auto';
 
 @Component({
     selector: 'app-budget',
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, NgOptimizedImage],
     templateUrl: './budget.html',
     styleUrl: './budget.scss'
 })
@@ -16,7 +16,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     isPercentage: boolean = false;
 
     expenses: { name: string; value: number; color: string }[] = [];
-    private readonly expenseColors = ['#8B5CF6', '#EF4444', '#22C55E', '#F59E42', '#FACC15'];
+    private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
     private readonly remainingColor = '#2563eb';
 
 
@@ -134,10 +134,18 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
                     legend: {
                         display: true,
                         position: 'bottom',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                let value = context.parsed;
+                                return `${label}: R$ ${value.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+                            }
+                        }
                     }
                 }
             }
         });
     }
 }
-
