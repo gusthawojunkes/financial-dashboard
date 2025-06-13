@@ -113,37 +113,33 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         const canvas = this.budgetChartCanvas.nativeElement;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
+        if (this.chart) {
+            this.chart.destroy();
+        }
         const expenseColors = this.expenses.map(e => e.color);
         const chartLabels = this.expenses.map(e => e.name).concat('Saldo Restante');
         const chartData = this.expenses.map(e => e.value).concat(Math.max(this.remaining, 0));
         const chartColors = expenseColors.concat('#2563eb');
-        if (this.chart) {
-            // Atualiza os dados do gráfico existente
-            this.chart.data.labels = chartLabels;
-            this.chart.data.datasets[0].data = chartData;
-            this.chart.data.datasets[0].backgroundColor = chartColors;
-            this.chart.update();
-        } else {
-            this.chart = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: chartLabels,
-                    datasets: [{
-                        data: chartData,
-                        backgroundColor: chartColors,
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                        }
+        this.chart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    data: chartData,
+                    backgroundColor: chartColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
                     }
                 }
-            });
-        }
+            }
+        });
     }
 }
+
