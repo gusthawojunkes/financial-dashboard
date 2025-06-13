@@ -3,12 +3,6 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import Chart from 'chart.js/auto';
 
-function randomColor() {
-    const hue = Math.floor(Math.random() * 360);
-    return `hsl(${hue}, 90%, 55%)`;
-}
-
-
 @Component({
     selector: 'app-budget',
     imports: [CommonModule, FormsModule],
@@ -22,6 +16,9 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     isPercentage: boolean = false;
 
     expenses: { name: string; value: number; color: string }[] = [];
+    private readonly expenseColors = ['#8B5CF6', '#EF4444', '#22C55E', '#F59E42', '#FACC15'];
+    private readonly remainingColor = '#2563eb';
+
 
     @ViewChild('budgetChartCanvas', {static: false}) budgetChartCanvas!: ElementRef<HTMLCanvasElement>;
     chart: Chart | null = null;
@@ -69,10 +66,11 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.isPercentage) {
             value = (this.salary * this.expenseValue) / 100;
         }
+        const color = this.expenseColors[this.expenses.length % this.expenseColors.length];
         this.expenses.push({
             name: this.expenseName + (this.isPercentage ? ` (${this.expenseValue}%)` : ''),
             value,
-            color: randomColor()
+            color
         });
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         this.expenseName = '';
@@ -116,10 +114,10 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.chart) {
             this.chart.destroy();
         }
-        const expenseColors = this.expenses.map(e => e.color);
+        const expenseColors = this.expenses.map((_, i) => this.expenseColors[i % this.expenseColors.length]);
         const chartLabels = this.expenses.map(e => e.name).concat('Saldo Restante');
         const chartData = this.expenses.map(e => e.value).concat(Math.max(this.remaining, 0));
-        const chartColors = expenseColors.concat('#2563eb');
+        const chartColors = expenseColors.concat(this.remainingColor);
         this.chart = new Chart(ctx, {
             type: 'doughnut',
             data: {

@@ -40,15 +40,18 @@
                         <input type="number" id="expense-value" placeholder="Valor (R$)" min="0" step="0.01"
                                [(ngModel)]="expenseValue">
                     </div>
-                    <div class="switch-container">
-                        <span id="value-label" class="active"><i class="fas fa-dollar-sign"></i> R$</span>
-                        <label class="switch">
-                            <input type="checkbox" id="input-type-switch" [(ngModel)]="isPercentage">
-                            <span class="slider round"></span>
-                        </label>
-                        <span id="percentage-label"><i class="fas fa-percentage"></i> %</span>
+                    <div class="add-expense-actions">
+                        <div class="switch-container">
+                            <span id="value-label" class="active"><i class="fas fa-dollar-sign"></i> R$</span>
+                            <label class="switch">
+                                <input type="checkbox" id="input-type-switch" [(ngModel)]="isPercentage">
+                                <span class="slider round"></span>
+                            </label>
+                            <span id="percentage-label"><i class="fas fa-percentage"></i> %</span>
+                        </div>
+                        <button id="add-expense" class="add-expense-btn" (click)="addExpense()">Adicionar Despesa
+                        </button>
                     </div>
-                    <button id="add-expense" (click)="addExpense()">Adicionar Despesa</button>
 
                     <div class="expenses-list" id="expenses-list">
                         <table class="expenses-table" *ngIf="expenses.length > 0">

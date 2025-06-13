@@ -97,7 +97,8 @@
             <button *ngIf="isDetailView" (click)="createChartByView()" class="back-button">&larr; Voltar para Opções
             </button>
         </div>
-        <div class="chart-container" [ngClass]="{'bank-chart-container': selectedView === 'banco'}">
+        <div class="chart-container" [ngClass]="{'bank-chart-container': selectedView === 'banco'}"
+             style="padding-top: 1.5rem">
             <div *ngIf="!hasExpenses" class="no-expenses-message">
                 Não há despesas para exibir. 😀
             </div>
@@ -143,8 +144,11 @@
                         {{ tx.description }}
                     </td>
                     <td>{{ tx.transactionTime }}</td>
-                    <td><span class="category-tag"
-                              [ngStyle]="{'background-color': getCategoryColor(tx.category || '') || '#e5e7eb', 'color': '#fff'}">{{ tx.category || 'Outros' }}</span>
+                    <td>
+                        <span class="category-tag"
+                              [ngStyle]="{'background-color': getCategoryColor(tx.category || '') || '#e5e7eb', 'color': '#fff'}">
+                            {{ tx.category || 'Outros' }}
+                        </span>
                     </td>
                     <td>
                         <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"

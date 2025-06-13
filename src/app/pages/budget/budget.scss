@@ -401,6 +401,24 @@ input:checked + .slider:before {
     font-weight: 600;
 }
 
+.add-expense-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.add-expense-btn-container {
+    display: none;
+}
+
+.add-expense-btn {
+    min-width: 180px;
+}
+
 @media (max-width: 900px) {
     .budget-columns {
         flex-direction: column;
@@ -446,4 +464,3 @@ input:checked + .slider:before {
         padding-right: 0;
     }
 }
-

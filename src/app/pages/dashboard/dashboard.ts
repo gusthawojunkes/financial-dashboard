@@ -348,7 +348,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
             onClick: onClick,
             plugins: {
                 legend: {
-                    display: type === 'pie' || type === 'line'
+                    display: type === 'pie' || type === 'line',
+                    position: type == 'pie' ? 'right' : 'bottom'
                 },
                 tooltip: {
                     callbacks: {
