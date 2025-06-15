@@ -1,0 +1,70 @@
+<div class="transactions-details">
+    <h2>Transações de {{ year }}/{{ month }}</h2>
+    <div *ngIf="transactions?.length; else noData">
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Data</th>
+                    <th>Categoria</th>
+                    <th>Moeda</th>
+                    <th class="text-right">Valor</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let tx of paginatedTransactions; let i = index" [class.revenue-row]="tx.value > 0"
+                    [class.expense-row]="tx.value < 0">
+                    <td>
+                        <img *ngIf="tx.institution" [src]="getBankIcon(tx.institution)" [alt]="tx.institution"
+                             width="24" height="24" style="vertical-align:middle;margin-right:6px;">
+                        {{ tx.description }}
+                    </td>
+                    <td>{{ tx.transactionTime }}</td>
+                    <td>
+                        <span class="category-tag"
+                              [ngStyle]="{'background-color': getCategoryColor(tx.category || '') || '#e5e7eb', 'color': '#fff'}">
+                            {{ tx.category || 'Outros' }}
+                        </span>
+                    </td>
+                    <td>
+                        <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"
+                             width="40" height="40" style="vertical-align:middle;">
+                    </td>
+                    <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0"
+                        (mouseenter)="hoveredIndex = i" (mouseleave)="hoveredIndex = null" style="position:relative;">
+                        {{ tx.value | currency:tx.currency }}
+                        <div *ngIf="hoveredIndex === i && getConvertedTooltip(tx)" class="custom-tooltip">
+                            {{ getConvertedTooltip(tx) }}
+                        </div>
+                    </td>
+                </tr>
+                <tr *ngIf="transactions && transactions.length > 0 && (!paginatedTransactions || paginatedTransactions.length === 0)">
+                    <td colspan="4" style="text-align: center;">Nenhuma transação para exibir nesta página.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-controls" *ngIf="transactions && transactions.length > 0 && totalPages > 1">
+            <div class="items-per-page-selector">
+                <label for="itemsPerPageSelect">Itens por página: </label>
+                <select id="itemsPerPageSelect" [ngModel]="itemsPerPage" (ngModelChange)="onItemsPerPageChange($event)">
+                    <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+                </select>
+            </div>
+            <div class="page-navigation">
+                <button (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1" class="pagination-button">
+                    &laquo; Anterior
+                </button>
+                <span>Página {{ currentPage }} de {{ totalPages }}</span>
+                <button (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                        class="pagination-button">
+                    Próxima &raquo;
+                </button>
+            </div>
+        </div>
+    </div>
+    <ng-template #noData>
+        <p>Nenhuma transação encontrada para este período.</p>
+    </ng-template>
+</div>

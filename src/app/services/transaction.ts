@@ -68,4 +68,8 @@ export class TransactionService {
         return value * rate;
     }
 
+    getTransactionsByMonth(year: number, month: number): Observable<Transaction[]> {
+        return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`);
+    }
+
 }

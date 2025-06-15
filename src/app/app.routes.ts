@@ -3,6 +3,7 @@ import {ImportComponent} from './pages/import/import';
 import {DashboardComponent} from './pages/dashboard/dashboard';
 import {AIComponent} from './pages/ai/ai';
 import {BudgetComponent} from './pages/budget/budget';
+import {TransactionsDetailsComponent} from './pages/transactions-details/transactions-details';
 
 
 export const routes: Routes = [
@@ -10,6 +11,7 @@ export const routes: Routes = [
     {path: 'dashboard', component: DashboardComponent},
     {path: 'copilot', component: AIComponent},
     {path: 'budget', component: BudgetComponent},
+    {path: 'transactions/:year/:month', component: TransactionsDetailsComponent},
     {path: '', redirectTo: '/import', pathMatch: 'full'},
     {path: '**', redirectTo: '/import'}
 ];
