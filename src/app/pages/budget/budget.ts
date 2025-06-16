@@ -97,6 +97,11 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     toggleExpenseSelection(index: number) {
         this.expenses[index].selected = !this.expenses[index].selected;
+        if (this.expenses[index].selected) {
+            this.selectedExpenses.add(index);
+        } else {
+            this.selectedExpenses.delete(index);
+        }
     }
 
     removeExpense(index: number) {
