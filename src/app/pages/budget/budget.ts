@@ -15,7 +15,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     expenseValue: number = 0;
     isPercentage: boolean = false;
 
-    expenses: { name: string; value: number; color: string }[] = [];
+    expenses: { name: string; value: number; percent: number; color: string; isPercent: boolean }[] = [];
     private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
     private readonly remainingColor = '#2563eb';
 
@@ -63,14 +63,22 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     addExpense() {
         if (!this.expenseName || this.expenseValue <= 0) return;
         let value = this.expenseValue;
+        let percent = 0;
+        let isPercent = this.isPercentage;
         if (this.isPercentage) {
-            value = (this.salary * this.expenseValue) / 100;
+            percent = this.expenseValue;
+            value = (this.salary * percent) / 100;
+        } else {
+            value = this.expenseValue;
+            percent = this.salary > 0 ? (value / this.salary) * 100 : 0;
         }
         const color = this.expenseColors[this.expenses.length % this.expenseColors.length];
         this.expenses.push({
-            name: this.expenseName + (this.isPercentage ? ` (${this.expenseValue}%)` : ''),
+            name: this.expenseName,
             value,
-            color
+            percent,
+            color,
+            isPercent
         });
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         this.expenseName = '';
@@ -96,15 +104,17 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     recalculatePercentageExpenses() {
         this.expenses = this.expenses.map(exp => {
-            const percentMatch = exp.name.match(/\((\d+(?:\.\d+)?)%\)$/);
-            if (percentMatch) {
-                const percent = parseFloat(percentMatch[1]);
+            if (exp.isPercent) {
                 return {
                     ...exp,
-                    value: (this.salary * percent) / 100
+                    value: (this.salary * exp.percent) / 100
+                };
+            } else {
+                return {
+                    ...exp,
+                    percent: this.salary > 0 ? (exp.value / this.salary) * 100 : 0
                 };
             }
-            return exp;
         });
     }
 

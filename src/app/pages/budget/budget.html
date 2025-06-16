@@ -64,7 +64,13 @@
                         <tbody>
                         <tr *ngFor="let exp of expenses; let i = index">
                             <td>{{ exp.name }}</td>
-                            <td class="text-right">{{ exp.value | currency:'BRL' }}</td>
+                            <td class="text-right">
+                                <span
+                                    [ngClass]="{'highlight-percent': exp.isPercent, 'highlight-value': !exp.isPercent}">
+                                    {{ exp.value | currency:'BRL' }}
+                                    <span class="expense-percent">({{ exp.percent | number:'1.2-2' }}%)</span>
+                                </span>
+                            </td>
                             <td class="remove-cell">
                                 <button class="remove-btn" (click)="removeExpense(i)">
                                     <img ngSrc="/assets/icons/trash.svg" alt="Remover Despesa" height="16" width="16"
