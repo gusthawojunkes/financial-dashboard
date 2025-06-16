@@ -14,6 +14,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     expenseName: string = '';
     expenseValue: number = 0;
     isPercentage: boolean = false;
+    selectedCategory: string | null = null;
 
     expenses: {
         name: string;
@@ -21,7 +22,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         percent: number;
         color: string;
         isPercent: boolean;
-        selected?: boolean
+        selected?: boolean;
+        category?: string;
     }[] = [];
     selectedExpenses: Set<number> = new Set();
     private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
@@ -70,8 +72,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     addExpense() {
         if (!this.expenseName || this.expenseValue <= 0) return;
-        let value = this.expenseValue;
-        let percent = 0;
+        let value;
+        let percent;
         let isPercent = this.isPercentage;
         if (this.isPercentage) {
             percent = this.expenseValue;
@@ -87,11 +89,13 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             percent,
             color,
             isPercent,
-            selected: false
+            selected: false,
+            category: this.selectedCategory || '',
         });
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         this.expenseName = '';
         this.expenseValue = 0;
+        this.selectedCategory = '';
         this.chartShouldRender = true;
     }
 
@@ -117,6 +121,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         localStorage.removeItem('budget-expenses');
         this.expenseName = '';
         this.expenseValue = 0;
+        this.selectedCategory = '';
         this.chartShouldRender = true;
     }
 

@@ -423,6 +423,11 @@ input:checked + .slider:before {
     min-height: 320px;
 }
 
+.form-group, .category-inputs, .category-select-container {
+    margin-bottom: 1.2rem;
+    width: 100%; /* Garante que o contêiner ocupe a largura total */
+}
+
 .selected-count {
     display: flex;
     align-items: center;
