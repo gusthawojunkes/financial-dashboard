@@ -62,8 +62,11 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr *ngFor="let exp of expenses; let i = index">
-                            <td>{{ exp.name }}</td>
+                        <tr *ngFor="let exp of expenses; let i = index" [class.selected-row]="exp.selected">
+                            <td>
+                                <input type="checkbox" [(ngModel)]="exp.selected"/>
+                                {{ exp.name }}
+                            </td>
                             <td class="text-right">
                                 <span
                                     [ngClass]="{'highlight-percent': exp.isPercent, 'highlight-value': !exp.isPercent}">

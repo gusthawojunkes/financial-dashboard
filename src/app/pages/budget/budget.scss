@@ -411,6 +411,10 @@ input:checked + .slider:before {
     min-width: 180px;
 }
 
+.selected-row {
+    background-color: #e0e7ff !important;
+}
+
 @media (max-width: 900px) {
     .budget-columns {
         flex-direction: column;

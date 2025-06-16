@@ -15,7 +15,15 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     expenseValue: number = 0;
     isPercentage: boolean = false;
 
-    expenses: { name: string; value: number; percent: number; color: string; isPercent: boolean }[] = [];
+    expenses: {
+        name: string;
+        value: number;
+        percent: number;
+        color: string;
+        isPercent: boolean;
+        selected?: boolean
+    }[] = [];
+    selectedExpenses: Set<number> = new Set();
     private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
     private readonly remainingColor = '#2563eb';
 
@@ -78,12 +86,17 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             value,
             percent,
             color,
-            isPercent
+            isPercent,
+            selected: false
         });
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         this.expenseName = '';
         this.expenseValue = 0;
         this.chartShouldRender = true;
+    }
+
+    toggleExpenseSelection(index: number) {
+        this.expenses[index].selected = !this.expenses[index].selected;
     }
 
     removeExpense(index: number) {
