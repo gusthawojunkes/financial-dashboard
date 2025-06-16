@@ -94,9 +94,25 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         this.chartShouldRender = true;
     }
 
+    recalculatePercentageExpenses() {
+        this.expenses = this.expenses.map(exp => {
+            const percentMatch = exp.name.match(/\((\d+(?:\.\d+)?)%\)$/);
+            if (percentMatch) {
+                const percent = parseFloat(percentMatch[1]);
+                return {
+                    ...exp,
+                    value: (this.salary * percent) / 100
+                };
+            }
+            return exp;
+        });
+    }
+
     setSalary(value: number) {
         this.salary = value;
+        this.recalculatePercentageExpenses();
         localStorage.setItem('budget-salary', String(value));
+        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         this.chartShouldRender = true;
     }
 

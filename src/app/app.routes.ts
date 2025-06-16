@@ -12,6 +12,6 @@ export const routes: Routes = [
     {path: 'copilot', component: AIComponent},
     {path: 'budget', component: BudgetComponent},
     {path: 'transactions/:year/:month', component: TransactionsDetailsComponent},
-    {path: '', redirectTo: '/import', pathMatch: 'full'},
-    {path: '**', redirectTo: '/import'}
+    {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+    {path: '**', redirectTo: '/dashboard'}
 ];
