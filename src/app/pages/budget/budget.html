@@ -64,7 +64,7 @@
                         <tbody>
                         <tr *ngFor="let exp of expenses; let i = index" [class.selected-row]="exp.selected">
                             <td>
-                                <input type="checkbox" [(ngModel)]="exp.selected"/>
+                                <input type="checkbox" [checked]="exp.selected" (change)="toggleExpenseSelection(i)"/>
                                 {{ exp.name }}
                             </td>
                             <td class="text-right">
