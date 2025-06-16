@@ -423,6 +423,29 @@ input:checked + .slider:before {
     min-height: 320px;
 }
 
+.selected-count {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.5rem;
+    background: #eef2ff;
+    color: #3730a3;
+    font-weight: 600;
+    font-size: 1rem;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.7rem;
+    box-shadow: 0 1px 4px #0001;
+    width: fit-content;
+    transition: background 0.2s, color 0.2s;
+
+    i {
+        color: #6366f1;
+        font-size: 1.1rem;
+        margin-right: 0.4rem;
+    }
+}
+
 @media (max-width: 900px) {
     .budget-columns {
         flex-direction: column;

@@ -53,6 +53,15 @@
                 </div>
 
                 <div class="expenses-list" id="expenses-list">
+                    <div class="selected-count"
+                         [class.selected-count--active]="selectedExpenses && selectedExpenses.size > 0">
+                        <i class="fas fa-check-square"></i>
+                        <ng-container *ngIf="selectedExpenses && selectedExpenses.size > 0; else noneSelected">
+                            {{ selectedExpenses.size }} item{{ selectedExpenses.size > 1 ? 's' : '' }}
+                            selecionado{{ selectedExpenses.size > 1 ? 's' : '' }}
+                        </ng-container>
+                        <ng-template #noneSelected>Nenhum item selecionado</ng-template>
+                    </div>
                     <table class="expenses-table" *ngIf="expenses.length > 0">
                         <thead>
                         <tr>
