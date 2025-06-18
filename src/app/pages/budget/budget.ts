@@ -64,6 +64,11 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         return this.salary - this.totalExpenses;
     }
 
+    get percentUsed(): number {
+        if (!this.salary || this.salary === 0) return 0;
+        return (this.totalExpenses / this.salary) * 100;
+    }
+
     ngAfterViewInit() {
         this.chartShouldRender = true;
         this.renderChart();
@@ -138,7 +143,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.selectedExpenses.size < 1 || !this.newCategoryName.trim()) return;
         const selected = Array.from(this.selectedExpenses).sort((a, b) => b - a);
         const groupedExpenses = selected.map(idx => this.expenses[idx]);
-        this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses, expanded: false});
+        this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses, expanded: true});
         // Remove grouped expenses from main list
         for (const idx of selected) {
             this.expenses.splice(idx, 1);
@@ -155,7 +160,10 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         const saved = localStorage.getItem('budget-categories');
         if (saved) {
             try {
-                this.categories = JSON.parse(saved).map((cat: any) => ({...cat, expanded: false}));
+                this.categories = JSON.parse(saved).map((cat: any, idx: number) => ({
+                    ...cat,
+                    expanded: idx < 3 ? true : false
+                }));
             } catch {
                 this.categories = [];
             }

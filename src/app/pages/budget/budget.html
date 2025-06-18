@@ -21,6 +21,13 @@
                         <span class="budget-summary-value" [class.positive]="remaining >= 0"
                               [class.negative]="remaining < 0">{{ remaining | currency:'BRL' }}</span>
                     </div>
+                    <div class="budget-summary-item">
+                        <span class="budget-summary-label">Usado/Restante (%)</span>
+                        <span class="budget-summary-value" [class.negative]="percentUsed > 90"
+                              [class.positive]="percentUsed <= 90">
+                            {{ percentUsed | number:'1.0-2' }}% / {{ (100 - percentUsed) | number:'1.0-2' }}%
+                        </span>
+                    </div>
                 </div>
             </div>
 
@@ -63,18 +70,22 @@
                 </div>
 
                 <div class="expenses-list" id="expenses-list">
-                    <div class="selected-count"
-                         [class.selected-count--active]="selectedExpenses && selectedExpenses.size > 0">
-                        <i class="fas fa-check-square"></i>
-                        <ng-container *ngIf="selectedExpenses && selectedExpenses.size > 0; else noneSelected">
-                            {{ selectedExpenses.size }} item{{ selectedExpenses.size > 1 ? 's' : '' }}
-                            selecionado{{ selectedExpenses.size > 1 ? 's' : '' }}
-                        </ng-container>
-                        <ng-template #noneSelected>Nenhum item selecionado</ng-template>
-                    </div>
-
-                    <div *ngIf="selectedExpenses.size > 0 && !showCategoryInput" style="margin-bottom: 1rem;">
-                        <button (click)="showCategoryInput = true" class="add-expense-btn">
+                    <div class="expenses-actions-row"
+                         style="display: flex; flex-direction: row; align-items: center; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;">
+                        <div class="selected-count"
+                             [class.selected-count--active]="selectedExpenses && selectedExpenses.size > 0">
+                            <i class="fas fa-check-square"></i>
+                            <ng-container *ngIf="selectedExpenses && selectedExpenses.size > 0; else noneSelected">
+                                {{ selectedExpenses.size }} item{{ selectedExpenses.size > 1 ? 's' : '' }}
+                                selecionado{{ selectedExpenses.size > 1 ? 's' : '' }}
+                            </ng-container>
+                            <ng-template #noneSelected>Zero selecionados</ng-template>
+                        </div>
+                        <button class="add-expense-btn fixed-create-category-btn-inline"
+                                [disabled]="selectedExpenses.size === 0 || showCategoryInput"
+                                (click)="showCategoryInput = true">
+                            <img ngSrc="/assets/icons/plus.svg" alt="Adicionar" height="16" width="16"
+                                 style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
                             <i class="fas fa-layer-group"></i> Criar Categoria
                         </button>
                     </div>
