@@ -451,6 +451,13 @@ input:checked + .slider:before {
     }
 }
 
+.action-buttons-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 16px;
+}
+
 @media (max-width: 900px) {
     .budget-columns {
         flex-direction: column;

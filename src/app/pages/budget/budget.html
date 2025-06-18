@@ -54,9 +54,10 @@
                         </label>
                         <span id="percentage-label"><i class="fas fa-percentage"></i> %</span>
                     </div>
-                    <button id="add-expense" class="add-expense-btn" (click)="addExpense()">Adicionar Despesa
-                    </button>
-                    <button id="suggest-budget" class="suggest-budget-btn" (click)="suggestBudget()">Sugerir Orçamento
+                    <button id="add-expense" class="add-expense-btn" (click)="addExpense()">
+                        <img ngSrc="/assets/icons/plus.svg" alt="Adicionar" height="16" width="16"
+                             style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
+                        Adicionar Despesa
                     </button>
                 </div>
 
@@ -103,9 +104,16 @@
                     <div class="no-data" *ngIf="expenses.length === 0">Nenhuma despesa adicionada</div>
                 </div>
 
-                <button id="reset-data" class="danger" style="margin-top: 20px;" (click)="resetData()">
-                    <i class="fas fa-trash"></i> Limpar Todos os Dados
-                </button>
+                <div class="action-buttons-row">
+                    <button id="suggest-budget" class="suggest-budget-btn" (click)="suggestBudget()">
+                        <img ngSrc="/assets/icons/shiny.png" alt="Sugerir Orçamento" height="16" width="16"
+                             style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
+                        Sugerir Orçamento
+                    </button>
+                    <button id="reset-data" class="danger" (click)="resetData()">
+                        <i class="fas fa-trash"></i> Limpar Todos os Dados
+                    </button>
+                </div>
             </div>
         </div>
 

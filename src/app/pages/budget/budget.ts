@@ -203,7 +203,11 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             alert('Informe seu salário antes de sugerir um orçamento.');
             return;
         }
-        const confirmed = confirm('Ao sugerir orçamento, todos os dados existentes serão excluídos e substituídos pela sugestão. Deseja continuar?');
+        const hasExpenses = this.expenses && this.expenses.length > 0;
+        let confirmed = true;
+        if (hasExpenses) {
+            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes serão excluídos e substituídos pela sugestão. Deseja continuar?');
+        }
         if (!confirmed) return;
         const suggestions = [
             {name: 'Moradia', percent: 30, category: 'moradia'},
