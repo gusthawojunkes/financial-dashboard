@@ -193,6 +193,12 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         this.chartShouldRender = true;
     }
 
+    confirmResetData() {
+        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação irá excluir todas as despesas, categorias e o salário.')) {
+            this.resetData();
+        }
+    }
+
     recalculatePercentageExpenses() {
         this.expenses = this.expenses.map(exp => {
             if (exp.isPercent) {
@@ -310,11 +316,16 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             return;
         }
         const hasExpenses = this.expenses && this.expenses.length > 0;
+        const hasCategories = this.categories && this.categories.length > 0;
         let confirmed = true;
-        if (hasExpenses) {
-            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes serão excluídos e substituídos pela sugestão. Deseja continuar?');
+        if (hasExpenses || hasCategories) {
+            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes (despesas e categorias) serão excluídos e substituídos pela sugestão. Deseja continuar?');
         }
         if (!confirmed) return;
+        if (hasCategories) {
+            this.categories = [];
+            localStorage.removeItem('budget-categories');
+        }
         const suggestions = [
             {name: 'Moradia', percent: 30, category: 'moradia'},
             {name: 'Alimentação', percent: 15, category: 'alimentacao'},

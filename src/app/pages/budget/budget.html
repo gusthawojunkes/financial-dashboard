@@ -33,13 +33,27 @@
 
             <div class="card summary-card budget-summary-card">
                 <h2>Informações de Orçamento</h2>
-
                 <div class="form-group">
                     <label for="salary">Salário Mensal (R$)</label>
                     <input type="number" id="salary" placeholder="Informe seu salário mensal" min="0" step="0.01"
                            [ngModel]="salary" (ngModelChange)="setSalary($event)">
+                    <div class="action-buttons-row">
+                        <button id="suggest-budget" class="suggest-budget-btn" (click)="suggestBudget()">
+                            <img ngSrc="/assets/icons/shiny.png" alt="Sugerir Orçamento" height="16" width="16"
+                                 style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
+                            Sugerir Orçamento
+                        </button>
+                        <button id="reset-data" class="danger" (click)="confirmResetData()">
+                            <img ngSrc="/assets/icons/trash.svg" alt="Remover Despesa" height="16" width="16"
+                                 style="filter: invert(1);">
+                            <i class="fas fa-trash"></i> Limpar todos os dados
+                        </button>
+                    </div>
                 </div>
+            </div>
 
+            <!-- Novo card para cadastro de despesa -->
+            <div class="card summary-card budget-summary-card">
                 <h3>Adicionar Despesa</h3>
                 <div class="category-inputs">
                     <input type="text" id="expense-name" placeholder="Nome da despesa" [(ngModel)]="expenseName">
@@ -68,7 +82,10 @@
                         Adicionar Despesa
                     </button>
                 </div>
+            </div>
 
+            <!-- Card de listagem de despesas -->
+            <div class="card summary-card budget-summary-card">
                 <div class="expenses-list" id="expenses-list">
                     <div class="expenses-actions-row"
                          style="display: flex; flex-direction: row; align-items: center; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;">
@@ -133,20 +150,11 @@
                         </tr>
                         </tbody>
                     </table>
-                    <div class="no-data" *ngIf="expenses.length === 0">Nenhuma despesa adicionada</div>
-                </div>
-
-                <div class="action-buttons-row">
-                    <button id="suggest-budget" class="suggest-budget-btn" (click)="suggestBudget()">
-                        <img ngSrc="/assets/icons/shiny.png" alt="Sugerir Orçamento" height="16" width="16"
-                             style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
-                        Sugerir Orçamento
-                    </button>
-                    <button id="reset-data" class="danger" (click)="resetData()">
-                        <img ngSrc="/assets/icons/trash.svg" alt="Remover Despesa" height="16" width="16"
-                             style="filter: invert(1);">
-                        <i class="fas fa-trash"></i> Limpar todos os dados
-                    </button>
+                    <div class="no-data" *ngIf="expenses.length === 0">
+                        <span class="no-expense-info">
+                            <i class="fas fa-folder-open"></i> Nenhuma despesa adicionada
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -169,7 +177,8 @@
                 <div id="chart-legend" class="chart-legend"></div>
             </div>
 
-            <div *ngIf="categories.length > 0" class="card summary-card budget-summary-card" style="margin-top:2rem;">
+            <div *ngIf="categories.length > 0; else noCategories" class="card summary-card budget-summary-card"
+                 style="margin-top:2rem;">
                 <h2>Categorias</h2>
                 <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
                     <div *ngFor="let cat of categories; let i = index" style="width: 100%;">
@@ -210,6 +219,15 @@
                     </div>
                 </div>
             </div>
+            <ng-template #noCategories>
+
+                <div class="card summary-card budget-summary-card" style="margin-top:2rem;">
+                    <h2> Categorias</h2>
+                    <div class="no-data-container">
+                        <p>Nenhuma categoria cadastrada ainda</p>
+                    </div>
+                </div>
+            </ng-template>
         </div>
     </div>
 </div>
