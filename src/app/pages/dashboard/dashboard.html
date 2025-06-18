@@ -97,7 +97,7 @@
     </div>
 
     <div class="card top-categories-card">
-        <h2 class="top-categories-title">Top 3 Categorias de Despesas</h2>
+        <h2 class="top-categories-title">Categorias com maiores gastos</h2>
         <ul class="top-categories-list">
             <li *ngFor="let cat of topExpenseCategories; let i = index" class="top-category-item">
                 <span class="top-category-icon" [style.background-color]="getCategoryColor(cat.category) || '#ef4444'">
@@ -187,3 +187,5 @@
         <p>Por favor, vá para a página de <strong>Importar</strong> para carregar um ficheiro financeiro.</p>
     </div>
 </ng-template>
+
+
