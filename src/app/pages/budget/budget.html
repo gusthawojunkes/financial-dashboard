@@ -22,7 +22,7 @@
                               [class.negative]="remaining < 0">{{ remaining | currency:'BRL' }}</span>
                     </div>
                     <div class="budget-summary-item">
-                        <span class="budget-summary-label">Usado/Restante (%)</span>
+                        <span class="budget-summary-label">Usado/Restante</span>
                         <span class="budget-summary-value" [class.negative]="percentUsed > 90"
                               [class.positive]="percentUsed <= 90">
                             {{ percentUsed | number:'1.0-2' }}% / {{ (100 - percentUsed) | number:'1.0-2' }}%
@@ -41,12 +41,12 @@
                         <button id="suggest-budget" class="suggest-budget-btn" (click)="suggestBudget()">
                             <img ngSrc="/assets/icons/shiny.png" alt="Sugerir Orçamento" height="16" width="16"
                                  style="vertical-align: middle; margin-right: 6px; filter: invert(1);">
-                            Sugerir Orçamento
+                            Sugerir
                         </button>
                         <button id="reset-data" class="danger" (click)="confirmResetData()">
                             <img ngSrc="/assets/icons/trash.svg" alt="Remover Despesa" height="16" width="16"
                                  style="filter: invert(1);">
-                            <i class="fas fa-trash"></i> Limpar todos os dados
+                            <i class="fas fa-trash"></i> Restaurar
                         </button>
                     </div>
                 </div>
@@ -84,8 +84,8 @@
                 </div>
             </div>
 
-            <!-- Card de listagem de despesas -->
             <div class="card summary-card budget-summary-card">
+                <h2>Despesas</h2>
                 <div class="expenses-list" id="expenses-list">
                     <div class="expenses-actions-row"
                          style="display: flex; flex-direction: row; align-items: center; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;">
@@ -179,7 +179,12 @@
 
             <div *ngIf="categories.length > 0; else noCategories" class="card summary-card budget-summary-card"
                  style="margin-top:2rem;">
-                <h2>Categorias</h2>
+                <div class="header-with-image">
+                    <img ngSrc="/assets/icons/globe-blue.svg" alt="Categorias" height="24" width="24"
+                         style="margin-right: 0.5rem;vertical-align: middle;">
+                    <h2>Categorias</h2>
+                </div>
+
                 <div style="display: flex; flex-direction: column; gap: 1rem; width: 100%;">
                     <div *ngFor="let cat of categories; let i = index" style="width: 100%;">
                         <div class="card summary-card"
@@ -187,10 +192,14 @@
                             <div style="display:flex;align-items:center;justify-content:space-between; width: 100%;">
                                 <div style="display:flex;align-items:center;gap:1rem;flex:1;cursor:pointer;"
                                      (click)="toggleCategoryExpanded(i)">
-                                    <i class="fas"
-                                       [ngClass]="cat.expanded ? 'fa-chevron-down' : 'fa-chevron-right'"
-                                       style="color:#2563eb;font-size:1.1rem;"></i>
-                                    <div style="font-weight:600; font-size:1.1rem; color:#2563eb;">
+                                    <div
+                                        style="font-weight:600; font-size:1.1rem; display: flex; align-items: center; gap: 0.5rem;">
+                                        <img ngSrc="/assets/icons/chevron-up.svg" alt="Expandido" height="18" width="18"
+                                             *ngIf="cat.expanded"
+                                             style="margin-left: 0.25rem; vertical-align: middle;"/>
+                                        <img ngSrc="/assets/icons/chevron-down.svg" alt="Fechado" height="18" width="18"
+                                             *ngIf="!cat.expanded"
+                                             style="margin-left: 0.25rem; vertical-align: middle;"/>
                                         <i class="fas fa-layer-group"></i> {{ cat.name }}
                                     </div>
                                 </div>
