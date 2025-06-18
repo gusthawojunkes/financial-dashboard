@@ -1,5 +1,5 @@
-<div class="transactions-details">
-    <h2>Transações de {{ year }}/{{ month }}</h2>
+<div class="container">
+    <h2>Transações {{ monthNamePerNumber[month].toLowerCase() }} de {{ year }}</h2>
     <div class="button-group">
         <button (click)="setChartType('line')" [disabled]="chartType === 'line'">Gráfico de Linha</button>
         <button (click)="setChartType('bar')" [disabled]="chartType === 'bar'">Gráfico de Barras</button>
@@ -7,7 +7,16 @@
             <input type="checkbox" [(ngModel)]="showAllDays" (change)="renderChart()"/>
             Mostrar todos os dias do mês
         </label>
+
     </div>
-    <canvas #dailyBalanceChart id="daily-balance-chart"></canvas>
+    <button class="next-month-btn" (click)="goToNextMonth()" [disabled]="isNextMonthInFuture()">
+        Próximo mês &rarr;
+    </button>
+    <button class="next-month-btn" style="margin-right: 0.4rem" (click)="goToPreviousMonth()"
+            [disabled]="isPreviousMonthInPast()">
+        &larr; Mês anterior
+    </button>
+    <canvas #dailyBalanceChart id="daily-balance-chart" style="max-height: 515px; width: 100%;"></canvas>
     <app-transactions-table [transactions]="transactions"></app-transactions-table>
+
 </div>

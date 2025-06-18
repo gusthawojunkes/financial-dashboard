@@ -2,10 +2,11 @@ import {Component, OnInit, AfterViewInit, OnChanges, SimpleChanges, ElementRef, 
 import {ActivatedRoute} from '@angular/router';
 import {TransactionService} from '../../services/transaction';
 import {Transaction} from '../../models/transaction.model';
-import {CommonModule, DatePipe} from '@angular/common';
+import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 import Chart from 'chart.js/auto';
+import DateHelper from '../../helper/date.helper';
 
 @Component({
     selector: 'app-transactions-details',
@@ -18,12 +19,14 @@ import Chart from 'chart.js/auto';
     styleUrls: ['./transactions-details.scss']
 })
 export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnChanges {
+    @ViewChild('dailyBalanceChart', {static: false}) chartRef!: ElementRef<HTMLCanvasElement>;
+    chart: Chart | null = null;
     year!: number;
     month!: number;
     transactions: Transaction[] = [];
-    @ViewChild('dailyBalanceChart', {static: false}) chartRef!: ElementRef<HTMLCanvasElement>;
-    chart: Chart | null = null;
     chartType: 'line' | 'bar' = 'line';
+    showAllDays: boolean = true;
+    monthNamePerNumber = DateHelper.monthNamePerNumber;
 
     constructor(
         private route: ActivatedRoute,
@@ -34,6 +37,17 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
     ngOnInit() {
         this.year = +this.route.snapshot.paramMap.get('year')!;
         this.month = +this.route.snapshot.paramMap.get('month')!;
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+        if (
+            this.year > currentYear ||
+            (this.year === currentYear && this.month > currentMonth)
+        ) {
+            alert('Não pode ser pesquisada uma data no futuro.');
+            window.location.href = `/`;
+            return;
+        }
         this.loadTransactions();
     }
 
@@ -57,19 +71,23 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
 
     renderChart() {
         if (!this.chartRef) return;
+        if (!this.transactions || this.transactions.length === 0) {
+            if (this.chart) {
+                this.chart.destroy();
+                this.chart = null;
+            }
+            return;
+        }
         const ctx = this.chartRef.nativeElement.getContext('2d');
         if (!ctx) return;
         if (this.chart) {
             this.chart.destroy();
         }
-        // Corrigir parsing da data para dd/MM/yyyy
         const getDay = (dateStr: string) => {
-            const [day, month, year] = dateStr.split('/').map(Number);
+            const [day, month, year] = DateHelper.splitBrazilianDate(dateStr);
             return day;
         };
-        // Determina o número de dias do mês selecionado
         const daysInMonth = new Date(this.year, this.month, 0).getDate();
-        // Decide se mostra todos os dias ou só os dias com transação
         let days: number[];
         if (this.showAllDays) {
             days = Array.from({length: daysInMonth}, (_, i) => i + 1);
@@ -89,7 +107,7 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
                 labels: days.map(d => d.toString()),
                 datasets: [
                     {
-                        label: 'Recebido',
+                        label: 'Recebido (R$)',
                         data: received,
                         borderColor: '#4caf50',
                         backgroundColor: this.chartType === 'line' ? 'rgba(76, 175, 80, 0.1)' : '#4caf50',
@@ -115,21 +133,51 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
                 interaction: {mode: 'index', intersect: false},
                 scales: {
                     x: {title: {display: true, text: 'Dia do Mês'}},
-                    y: {title: {display: true, text: 'Valor'}}
+                    y: {title: {display: true, text: 'Valor (R$)'}}
                 }
             }
         });
     }
 
-    showAllDays: boolean = false;
-
-    toggleShowAllDays() {
-        this.showAllDays = !this.showAllDays;
-        this.renderChart();
-    }
-
     setChartType(type: 'line' | 'bar') {
         this.chartType = type;
         this.renderChart();
+    }
+
+    goToNextMonth() {
+        if (this.month === 12) {
+            this.month = 1;
+            this.year++;
+        } else {
+            this.month++;
+        }
+        window.location.href = `/transactions/${this.year}/${this.month}`;
+    }
+
+    goToPreviousMonth() {
+        if (this.month === 1) {
+            this.month = 12;
+            this.year--;
+        } else {
+            this.month--;
+        }
+        window.location.href = `/transactions/${this.year}/${this.month}`;
+    }
+
+    isNextMonthInFuture(): boolean {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1;
+        let nextMonth = this.month + 1;
+        let nextYear = this.year;
+        if (nextMonth > 12) {
+            nextMonth = 1;
+            nextYear++;
+        }
+        return nextYear > currentYear || (nextYear === currentYear && nextMonth > currentMonth);
+    }
+
+    isPreviousMonthInPast(): boolean {
+        return this.year <= 1970 && this.month === 1;
     }
 }

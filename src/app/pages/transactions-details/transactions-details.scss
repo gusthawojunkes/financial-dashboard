@@ -68,3 +68,28 @@
     box-shadow: 0 1px 2px 0 rgba(37, 99, 235, 0.08);
     transition: border 0.2s;
 }
+
+.next-month-btn {
+    background: #2563eb;
+    color: #fff;
+    border: 1px solid #2563eb;
+    border-radius: 6px;
+    padding: 0.4rem 1.2rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, border 0.2s, color 0.2s;
+    float: right;
+}
+
+.next-month-btn:hover:not([disabled]) {
+    background: #1e40af;
+    border-color: #1e40af;
+    color: #fff;
+}
+
+.next-month-btn[disabled] {
+    background: #e0e0e0 !important;
+    color: #888 !important;
+    border-color: #ccc !important;
+    cursor: not-allowed !important;
+}

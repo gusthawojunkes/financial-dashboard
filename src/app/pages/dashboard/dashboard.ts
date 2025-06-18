@@ -15,7 +15,7 @@ import {TransactionService} from '../../services/transaction';
 import {Transaction} from '../../models/transaction.model';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 import {Router} from '@angular/router';
-import {monthNamePerNumber} from '../../helper/date.helper';
+import DateHelper from '../../helper/date.helper';
 
 @Component({
     selector: 'app-dashboard',
@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     isDetailView = false;
     selectedView: 'categoria' | 'banco' = 'categoria';
     topExpenseCategories: { category: string, value: number }[] = [];
-    public readonly monthNamePerNumber = monthNamePerNumber
+    public readonly monthNamePerNumber = DateHelper.monthNamePerNumber
 
     constructor(
         private cdr: ChangeDetectorRef,
@@ -54,7 +54,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         const yearMonthSet: { [year: number]: Set<number> } = {};
         this.transactions.forEach(tx => {
             if (tx.transactionTime) {
-                const [day, month, year] = tx.transactionTime.split('/').map(Number);
+
+                const [day, month, year] = DateHelper.splitBrazilianDate(tx.transactionTime);
                 if (!isNaN(year) && !isNaN(month)) {
                     if (!yearMonthSet[year]) yearMonthSet[year] = new Set();
                     yearMonthSet[year].add(month);
@@ -279,7 +280,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             return;
         }
         const revenueByYear = revenues.reduce((acc, tx) => {
-            const [date, month, year] = tx.transactionTime.split('/').map(Number);
+            const [date, month, year] = DateHelper.splitBrazilianDate(tx.transactionTime);
             const value = this.transactionService.convertToBRL(tx.value, tx.currency) || tx.value;
             acc[year] = (acc[year] || 0) + value;
             return acc;
