@@ -1,5 +1,13 @@
 <div class="transactions-details">
     <h2>Transações de {{ year }}/{{ month }}</h2>
+    <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+        <button (click)="setChartType('line')" [disabled]="chartType === 'line'">Gráfico de Linha</button>
+        <button (click)="setChartType('bar')" [disabled]="chartType === 'bar'">Gráfico de Barras</button>
+        <label style="display: flex; align-items: center; gap: 0.25rem;">
+            <input type="checkbox" [(ngModel)]="showAllDays" (change)="renderChart()"/>
+            Mostrar todos os dias do mês
+        </label>
+    </div>
     <canvas #dailyBalanceChart id="daily-balance-chart"></canvas>
     <app-transactions-table [transactions]="transactions"></app-transactions-table>
 </div>

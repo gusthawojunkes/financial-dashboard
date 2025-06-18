@@ -23,6 +23,7 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
     transactions: Transaction[] = [];
     @ViewChild('dailyBalanceChart', {static: false}) chartRef!: ElementRef<HTMLCanvasElement>;
     chart: Chart | null = null;
+    chartType: 'line' | 'bar' = 'line';
 
     constructor(
         private route: ActivatedRoute,
@@ -66,7 +67,15 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
             const [day, month, year] = dateStr.split('/').map(Number);
             return day;
         };
-        const days = Array.from(new Set(this.transactions.map(t => getDay(t.transactionTime)))).sort((a, b) => a - b);
+        // Determina o número de dias do mês selecionado
+        const daysInMonth = new Date(this.year, this.month, 0).getDate();
+        // Decide se mostra todos os dias ou só os dias com transação
+        let days: number[];
+        if (this.showAllDays) {
+            days = Array.from({length: daysInMonth}, (_, i) => i + 1);
+        } else {
+            days = Array.from(new Set(this.transactions.map(t => getDay(t.transactionTime)))).sort((a, b) => a - b);
+        }
         const received: number[] = [];
         const spent: number[] = [];
         days.forEach(day => {
@@ -75,12 +84,26 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
             spent.push(dayTxs.filter(t => t.value < 0).reduce((sum, t) => sum + Math.abs(t.value), 0));
         });
         this.chart = new Chart(ctx, {
-            type: 'bar',
+            type: this.chartType,
             data: {
                 labels: days.map(d => d.toString()),
                 datasets: [
-                    {label: 'Recebido', data: received, backgroundColor: '#4caf50'},
-                    {label: 'Gasto', data: spent, backgroundColor: '#f44336'}
+                    {
+                        label: 'Recebido',
+                        data: received,
+                        borderColor: '#4caf50',
+                        backgroundColor: this.chartType === 'line' ? 'rgba(76, 175, 80, 0.1)' : '#4caf50',
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Gasto',
+                        data: spent,
+                        borderColor: '#f44336',
+                        backgroundColor: this.chartType === 'line' ? 'rgba(244, 67, 54, 0.1)' : '#f44336',
+                        fill: true,
+                        tension: 0.3
+                    }
                 ]
             },
             options: {
@@ -88,8 +111,25 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
                 plugins: {
                     legend: {display: true},
                     title: {display: true, text: 'Recebido vs Gasto por Dia'}
+                },
+                interaction: {mode: 'index', intersect: false},
+                scales: {
+                    x: {title: {display: true, text: 'Dia do Mês'}},
+                    y: {title: {display: true, text: 'Valor'}}
                 }
             }
         });
+    }
+
+    showAllDays: boolean = false;
+
+    toggleShowAllDays() {
+        this.showAllDays = !this.showAllDays;
+        this.renderChart();
+    }
+
+    setChartType(type: 'line' | 'bar') {
+        this.chartType = type;
+        this.renderChart();
     }
 }
