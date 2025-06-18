@@ -40,3 +40,4 @@ export class TransactionsDetailsComponent implements OnInit {
             });
     }
 }
+

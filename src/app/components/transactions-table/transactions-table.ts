@@ -43,7 +43,6 @@ export class TransactionsTableComponent implements OnInit, OnChanges {
     }
 
     updatePagination(): void {
-        console.log(this.transactions)
         if (!this.transactions || this.transactions.length === 0) {
             this.paginatedTransactions = [];
             this.totalPages = 0;

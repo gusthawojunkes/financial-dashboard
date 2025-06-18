@@ -112,6 +112,36 @@
         </ul>
     </div>
 
+    <div class="card year-month-filter" style="margin-bottom: 1rem;">
+        <div class="header-with-image">
+            <img src="assets/icons/filter.svg" alt="Calendar Icon" width="24" height="24"
+                 style="vertical-align: middle;"/>
+            <h3 class="table-title">Filtrar por Ano e Mês</h3>
+        </div>
+        <div class="years-row">
+            <span *ngFor="let year of availableYears" style="margin-right: 8px;">
+                <button
+                    (click)="selectYear(year)"
+                    [class.selected]="selectedYear === year"
+                    class="year-btn">
+                    {{ year }}
+                </button>
+            </span>
+        </div>
+        <h4 *ngIf="selectedYear">Mês</h4>
+        <div class="months-row" *ngIf="selectedYear">
+            <span *ngFor="let month of [1,2,3,4,5,6,7,8,9,10,11,12]" style="margin-right: 4px;">
+                <button
+                    [disabled]="!availableMonthsByYear[selectedYear] || !availableMonthsByYear[selectedYear].includes(month)"
+                    (click)="selectMonth(selectedYear, month)"
+                    [class.selected]="selectedMonth === month"
+                    class="month-btn">
+                    {{ monthNamePerNumber[month] }}
+                </button>
+            </span>
+        </div>
+    </div>
+
     <div class="card">
         <h2 class="table-title">Detalhes das Transações</h2>
         <app-transactions-table [transactions]="transactions"></app-transactions-table>

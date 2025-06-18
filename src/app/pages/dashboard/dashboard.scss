@@ -374,6 +374,73 @@
     border: 3px solid #fff;
 }
 
+/* Filtro de Ano/Mês */
+.year-month-filter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: #fff; /* mesmo fundo dos outros cards */
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px 0 rgba(16, 30, 54, 0.06);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid #e5e7eb;
+    max-height: 1000px;
+    overflow: hidden;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s, margin 0.3s;
+    will-change: max-height, padding, margin;
+}
+
+.year-month-filter.collapsed {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s, margin 0.3s, opacity 0.2s;
+}
+
+.years-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.2rem;
+    margin-bottom: 0.7rem;
+}
+
+.months-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    width: 100%;
+    margin-bottom: 0.7rem;
+    justify-content: stretch;
+}
+
+.year-btn, .month-btn {
+    background: #f3f4f6;
+    color: #222;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1.1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 2px 0 rgba(16, 30, 54, 0.04);
+}
+
+.year-btn.selected, .month-btn.selected, .year-btn:hover:not(:disabled), .month-btn:hover:not(:disabled) {
+    background: #2563eb;
+    color: #fff;
+}
+
+.year-btn:disabled, .month-btn:disabled {
+    background: #e5e7eb;
+    color: #9ca3af;
+    cursor: not-allowed;
+}
+
 /* Ajustes para telas menores, se necessário */
 @media (max-width: 600px) {
     .pagination-controls {
@@ -393,4 +460,22 @@
     .page-navigation span {
         margin: 0 10px;
     }
+}
+
+.header-with-image {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.positive {
+    color: #16a34a;
+}
+
+.negative {
+    color: #dc2626;
+}
+
+.text-right {
+    text-align: right;
 }

@@ -6,8 +6,6 @@ import {
     AfterViewInit,
     ElementRef,
     ViewChild,
-    OnChanges,
-    SimpleChanges
 } from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {Subscription} from 'rxjs';
@@ -16,6 +14,8 @@ import {FormsModule} from '@angular/forms';
 import {TransactionService} from '../../services/transaction';
 import {Transaction} from '../../models/transaction.model';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
+import {Router} from '@angular/router';
+import {monthNamePerNumber} from '../../helper/date.helper';
 
 @Component({
     selector: 'app-dashboard',
@@ -24,43 +24,59 @@ import {TransactionsTableComponent} from '../../components/transactions-table/tr
     templateUrl: './dashboard.html',
     styleUrls: ['./dashboard.scss']
 })
-export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnChanges {
-    private transactionsSubscription!: Subscription;
-    transactions: Transaction[] = [];
-
-    summary = {revenue: 0, expenses: 0, balance: 0};
-
-    private chartInstance: Chart | null = null;
-    chartTitle = 'Despesas por Categoria';
-    isDetailView = false;
-    public paginatedTransactions: Transaction[] = [];
-    public currentPage: number = 1;
-    public itemsPerPage: number = 8;
-    public itemsPerPageOptions: number[] = [8, 16, 24];
-    public totalPages: number = 0;
-
-    selectedView: 'categoria' | 'banco' = 'categoria';
-
-    hoveredIndex: number | null = null;
-
+export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('mainChart') mainChartRef!: ElementRef<HTMLCanvasElement>;
-
+    private transactionsSubscription!: Subscription;
+    private chartInstance: Chart | null = null;
     private categoryColors: { [category: string]: string } = {};
     public hasExpenses: boolean = true;
+    public availableYears: number[] = [];
+    public availableMonthsByYear: { [year: number]: number[] } = {};
+    public selectedYear: number | null = null;
+    public selectedMonth: number | null = null;
 
+    transactions: Transaction[] = [];
+    summary = {revenue: 0, expenses: 0, balance: 0};
+    chartTitle = 'Despesas por Categoria';
+    isDetailView = false;
+    selectedView: 'categoria' | 'banco' = 'categoria';
     topExpenseCategories: { category: string, value: number }[] = [];
+    public readonly monthNamePerNumber = monthNamePerNumber
 
     constructor(
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService,
+        private router: Router,
     ) {
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['transactions'] && this.transactions) {
-            this.currentPage = 1;
-            this.updatePagination();
+    private updateAvailableYearsAndMonths(): void {
+        const yearMonthSet: { [year: number]: Set<number> } = {};
+        this.transactions.forEach(tx => {
+            if (tx.transactionTime) {
+                const [day, month, year] = tx.transactionTime.split('/').map(Number);
+                if (!isNaN(year) && !isNaN(month)) {
+                    if (!yearMonthSet[year]) yearMonthSet[year] = new Set();
+                    yearMonthSet[year].add(month);
+                }
+            }
+        });
+        this.availableYears = Object.keys(yearMonthSet).map(Number).sort((a, b) => a - b);
+        this.availableMonthsByYear = {};
+        for (const year of this.availableYears) {
+            this.availableMonthsByYear[year] = Array.from(yearMonthSet[year]).sort((a, b) => a - b);
         }
+    }
+
+    selectYear(year: number): void {
+        this.selectedYear = this.selectedYear === year ? null : year;
+        this.selectedMonth = null;
+    }
+
+    selectMonth(year: number, month: number): void {
+        this.selectedYear = year;
+        this.selectedMonth = month;
+        this.router.navigate(['/transactions', year, month]);
     }
 
     async ngOnInit(): Promise<void> {
@@ -74,11 +90,9 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
                 this.calculateSummary();
                 this.updateTopExpenseCategories();
                 this.createChartByView();
+                this.updateAvailableYearsAndMonths();
             }
             this.cdr.detectChanges();
-            if (this.transactions && this.transactions.length > 0) {
-                this.updatePagination();
-            }
         });
     }
 
@@ -97,43 +111,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
-    }
-
-    updatePagination(): void {
-        if (!this.transactions || this.transactions.length === 0) {
-            this.paginatedTransactions = [];
-            this.totalPages = 0;
-            this.currentPage = 1;
-            return;
-        }
-
-        this.totalPages = Math.ceil(this.transactions.length / this.itemsPerPage);
-
-        if (this.currentPage > this.totalPages && this.totalPages > 0) {
-            this.currentPage = this.totalPages;
-        } else if (this.currentPage < 1 && this.totalPages > 0) {
-            this.currentPage = 1;
-        } else if (this.totalPages === 0) {
-            this.currentPage = 1;
-        }
-
-
-        const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-        const endIndex = startIndex + this.itemsPerPage;
-        this.paginatedTransactions = this.transactions.slice(startIndex, endIndex);
-    }
-
-    goToPage(page: number): void {
-        if (page >= 1 && page <= this.totalPages) {
-            this.currentPage = page;
-            this.updatePagination();
-        }
-    }
-
-    onItemsPerPageChange(newItemsPerPage: string | number): void {
-        this.itemsPerPage = Number(newItemsPerPage);
-        this.currentPage = 1;
-        this.updatePagination();
     }
 
     calculateSummary(): void {
@@ -203,7 +180,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         const labels = Object.keys(spendingByCategory);
         const data = Object.values(spendingByCategory);
         const colors = this.generateColors(labels.length);
-        // Store category-color mapping
         this.categoryColors = {};
         labels.forEach((cat, idx) => {
             this.categoryColors[cat] = colors[idx];
@@ -380,46 +356,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         return Array.from({length: numColors}, (_, i) => colors[i % colors.length]);
     }
 
-    getBankIcon(institution: string): string {
-        switch (institution.toLowerCase()) {
-            case 'nubank':
-                return '/assets/icons/banks/nubank-logo-2021.svg';
-            case 'c6 bank':
-            case 'c6':
-            case 'c6bank':
-            case 'c6_bank':
-                return '/assets/icons/banks/c6-bank-logo-mini.jpeg';
-            case 'itau':
-            case 'itaú':
-                return '/assets/icons/banks/itau-logo-2023.svg';
-            case 'caixa':
-            case 'caixa econômica':
-                return '/assets/icons/banks/caixa-logo-2023.svg';
-            case 'wise':
-                return '/assets/icons/banks/wise-logo-mini.png';
-            default:
-                return '';
-        }
-    }
-
-    getCurrencyFlag(currency: string): string {
-        const map: { [key: string]: string } = {
-            'BRL': 'br',
-            'CAD': 'ca',
-            'USD': 'us',
-            'EUR': 'eu',
-        };
-        const code = map[currency.toUpperCase()] || 'br'; // Default to Brazil if not found
-        return `/assets/icons/flags/${code}.svg`;
-    }
-
-    getConvertedTooltip(tx: Transaction): string | null {
-        if (!tx.currency || tx.currency.toUpperCase() === 'BRL') return null;
-        const converted = this.transactionService.convertToBRL(tx.value, tx.currency);
-        if (!converted) return null;
-        return `${converted.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}`;
-    }
-
     getCategoryIcon(category: string | undefined): string {
         if (!category) return '/assets/icons/tag.svg';
         const lowerCategory = category.toLowerCase();
@@ -431,3 +367,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit, OnC
         return '/assets/icons/tag.svg'; // Default icon
     }
 }
+
+
+
+
