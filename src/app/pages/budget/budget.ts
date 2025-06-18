@@ -197,4 +197,37 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             }
         });
     }
+
+    suggestBudget() {
+        if (!this.salary || this.salary <= 0) {
+            alert('Informe seu salário antes de sugerir um orçamento.');
+            return;
+        }
+        const confirmed = confirm('Ao sugerir orçamento, todos os dados existentes serão excluídos e substituídos pela sugestão. Deseja continuar?');
+        if (!confirmed) return;
+        const suggestions = [
+            {name: 'Moradia', percent: 30, category: 'moradia'},
+            {name: 'Alimentação', percent: 15, category: 'alimentacao'},
+            {name: 'Saúde', percent: 10, category: 'saude'},
+            {name: 'Educação', percent: 4, category: 'educacao'},
+            {name: 'Transporte', percent: 8, category: 'transporte'},
+            {name: 'Lazer', percent: 10, category: 'lazer'},
+            {name: 'Extra', percent: 8, category: 'extra'},
+            {name: 'Investimentos', percent: 15, category: 'investimentos'},
+        ];
+        this.expenses = suggestions.map((s, i) => ({
+            name: s.name,
+            value: (this.salary * s.percent) / 100,
+            percent: s.percent,
+            color: this.expenseColors[i % this.expenseColors.length],
+            isPercent: true,
+            selected: false,
+            category: s.category
+        }));
+        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        this.expenseName = '';
+        this.expenseValue = 0;
+        this.selectedCategory = '';
+        this.chartShouldRender = true;
+    }
 }
