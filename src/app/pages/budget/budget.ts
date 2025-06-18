@@ -28,6 +28,9 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     selectedExpenses: Set<number> = new Set();
     private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
     private readonly remainingColor = '#2563eb';
+    categories: { name: string; expenses: any[] }[] = [];
+    newCategoryName: string = '';
+    showCategoryInput: boolean = false;
 
 
     @ViewChild('budgetChartCanvas', {static: false}) budgetChartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -108,6 +111,38 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         }
     }
 
+    createCategoryFromSelected() {
+        if (this.selectedExpenses.size < 2 || !this.newCategoryName.trim()) return;
+        const selected = Array.from(this.selectedExpenses).sort((a, b) => b - a);
+        const groupedExpenses = selected.map(idx => this.expenses[idx]);
+        this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses});
+        // Remove grouped expenses from main list
+        for (const idx of selected) {
+            this.expenses.splice(idx, 1);
+        }
+        this.selectedExpenses.clear();
+        this.newCategoryName = '';
+        this.showCategoryInput = false;
+        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+        this.chartShouldRender = true;
+    }
+
+    loadCategories() {
+        const saved = localStorage.getItem('budget-categories');
+        if (saved) {
+            try {
+                this.categories = JSON.parse(saved);
+            } catch {
+                this.categories = [];
+            }
+        }
+    }
+
+    ngOnInit() {
+        this.loadCategories();
+    }
+
     removeExpense(index: number) {
         this.expenses.splice(index, 1);
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
@@ -119,6 +154,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         localStorage.removeItem('budget-salary');
         this.expenses = [];
         localStorage.removeItem('budget-expenses');
+        this.categories = [];
+        localStorage.removeItem('budget-categories');
         this.expenseName = '';
         this.expenseValue = 0;
         this.selectedCategory = '';
@@ -144,13 +181,31 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     setSalary(value: number) {
         this.salary = value;
         this.recalculatePercentageExpenses();
+        // Recalcula despesas das categorias agrupadas
+        this.categories = this.categories.map(cat => ({
+            ...cat,
+            expenses: cat.expenses.map(exp => {
+                if (exp.isPercent) {
+                    return {
+                        ...exp,
+                        value: (this.salary * exp.percent) / 100
+                    };
+                } else {
+                    return {
+                        ...exp,
+                        percent: this.salary > 0 ? (exp.value / this.salary) * 100 : 0
+                    };
+                }
+            })
+        }));
         localStorage.setItem('budget-salary', String(value));
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
         this.chartShouldRender = true;
     }
 
     renderChart() {
-        if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && (this.expenses.length > 0 || this.totalExpenses > 0))) {
+        if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && ((this.expenses.length + this.categories.length) > 0 || this.totalExpenses > 0))) {
             if (this.chart) {
                 this.chart.destroy();
                 this.chart = null;
@@ -163,10 +218,29 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.chart) {
             this.chart.destroy();
         }
-        const expenseColors = this.expenses.map((_, i) => this.expenseColors[i % this.expenseColors.length]);
-        const chartLabels = this.expenses.map(e => e.name).concat('Saldo Restante');
-        const chartData = this.expenses.map(e => e.value).concat(Math.max(this.remaining, 0));
-        const chartColors = expenseColors.concat(this.remainingColor);
+        // Monta lista de labels, valores e cores: despesas + categorias agrupadas
+        const chartLabels: string[] = [];
+        const chartData: number[] = [];
+        const chartColors: string[] = [];
+        // Despesas individuais
+        this.expenses.forEach((e, i) => {
+            chartLabels.push(e.name);
+            chartData.push(e.value);
+            chartColors.push(this.expenseColors[i % this.expenseColors.length]);
+        });
+        // Categorias agrupadas
+        this.categories.forEach((cat, i) => {
+            chartLabels.push(cat.name);
+            const total = cat.expenses.reduce((sum, exp) => sum + exp.value, 0);
+            chartData.push(total);
+            // Cor para categoria agrupada: pega da paleta, mas deslocada para não colidir com despesas
+            chartColors.push(this.expenseColors[(this.expenses.length + i) % this.expenseColors.length]);
+        });
+        // Saldo restante
+        chartLabels.push('Saldo Restante');
+        const used = chartData.reduce((a, b) => a + b, 0);
+        chartData.push(Math.max(this.salary - used, 0));
+        chartColors.push(this.remainingColor);
         this.chart = new Chart(ctx, {
             type: 'doughnut',
             data: {
