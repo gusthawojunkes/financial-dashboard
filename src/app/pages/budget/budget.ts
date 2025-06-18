@@ -54,7 +54,10 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     }
 
     get totalExpenses(): number {
-        return this.expenses.reduce((sum, exp) => sum + exp.value, 0);
+        // Soma despesas individuais + total das categorias agrupadas
+        const expensesSum = this.expenses.reduce((sum, exp) => sum + exp.value, 0);
+        const categoriesSum = this.categories.reduce((catSum, cat) => catSum + cat.expenses.reduce((sum, exp) => sum + exp.value, 0), 0);
+        return expensesSum + categoriesSum;
     }
 
     get remaining(): number {
@@ -85,8 +88,9 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             value = this.expenseValue;
             percent = this.salary > 0 ? (value / this.salary) * 100 : 0;
         }
-        const color = this.expenseColors[this.expenses.length % this.expenseColors.length];
-        this.expenses.push({
+        // Corrige cor para despesas em categorias (mantém paleta, mas não depende do length da lista principal)
+        const color = this.expenseColors[(this.expenses.length + this.categories.reduce((acc, c) => acc + c.expenses.length, 0)) % this.expenseColors.length];
+        const newExpense = {
             name: this.expenseName,
             value,
             percent,
@@ -94,12 +98,27 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             isPercent,
             selected: false,
             category: this.selectedCategory || '',
-        });
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        };
+        if (this.selectedCategory) {
+            // Se a categoria já existe, adiciona direto nela
+            const catIdx = this.categories.findIndex(c => c.name === this.selectedCategory);
+            if (catIdx !== -1) {
+                this.categories[catIdx].expenses.push(newExpense);
+                localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+                this.chartShouldRender = true;
+            } else {
+                this.expenses.push(newExpense);
+                localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+                this.chartShouldRender = true;
+            }
+        } else {
+            this.expenses.push(newExpense);
+            localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+            this.chartShouldRender = true;
+        }
         this.expenseName = '';
         this.expenseValue = 0;
         this.selectedCategory = '';
-        this.chartShouldRender = true;
     }
 
     toggleExpenseSelection(index: number) {
@@ -112,7 +131,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     }
 
     createCategoryFromSelected() {
-        if (this.selectedExpenses.size < 2 || !this.newCategoryName.trim()) return;
+        if (this.selectedExpenses.size < 1 || !this.newCategoryName.trim()) return;
         const selected = Array.from(this.selectedExpenses).sort((a, b) => b - a);
         const groupedExpenses = selected.map(idx => this.expenses[idx]);
         this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses});
@@ -205,7 +224,9 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     }
 
     renderChart() {
-        if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && ((this.expenses.length + this.categories.length) > 0 || this.totalExpenses > 0))) {
+        // Corrige condição para exibir o gráfico: deve considerar despesas OU categorias
+        const hasData = (this.expenses.length > 0 || this.categories.length > 0);
+        if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && hasData)) {
             if (this.chart) {
                 this.chart.destroy();
                 this.chart = null;
@@ -233,7 +254,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             chartLabels.push(cat.name);
             const total = cat.expenses.reduce((sum, exp) => sum + exp.value, 0);
             chartData.push(total);
-            // Cor para categoria agrupada: pega da paleta, mas deslocada para não colidir com despesas
             chartColors.push(this.expenseColors[(this.expenses.length + i) % this.expenseColors.length]);
         });
         // Saldo restante
@@ -306,6 +326,19 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         this.expenseName = '';
         this.expenseValue = 0;
         this.selectedCategory = '';
+        this.chartShouldRender = true;
+    }
+
+    removeCategory(index: number) {
+        // Recupera despesas da categoria e devolve para a lista principal
+        const removed = this.categories.splice(index, 1)[0];
+        if (removed && removed.expenses) {
+            // Remove seleção das despesas recuperadas
+            removed.expenses.forEach(exp => exp.selected = false);
+            this.expenses = this.expenses.concat(removed.expenses);
+        }
+        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
         this.chartShouldRender = true;
     }
 }

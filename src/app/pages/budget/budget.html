@@ -43,6 +43,7 @@
                     <label for="expense-category">Categoria (Opcional)</label>
                     <select id="expense-category" [(ngModel)]="selectedCategory">
                         <option value="">Selecione uma categoria</option>
+                        <option *ngFor="let cat of categories" [value]="cat.name">{{ cat.name }}</option>
                     </select>
                 </div>
                 <div class="add-expense-actions">
@@ -73,7 +74,7 @@
                     </div>
 
                     <!-- Botão Criar Categoria -->
-                    <div *ngIf="selectedExpenses.size > 1 && !showCategoryInput" style="margin-bottom: 1rem;">
+                    <div *ngIf="selectedExpenses.size > 0 && !showCategoryInput" style="margin-bottom: 1rem;">
                         <button (click)="showCategoryInput = true" class="add-expense-btn" style="background:#6366f1;">
                             <i class="fas fa-layer-group"></i> Criar Categoria
                         </button>
@@ -128,9 +129,15 @@
                     <!-- Lista de Categorias Agrupadas -->
                     <div *ngIf="categories.length > 0" style="margin-top:2rem;">
                         <h3 style="color:#6366f1;">Categorias Agrupadas</h3>
-                        <div *ngFor="let cat of categories" class="card summary-card" style="margin-bottom:1rem;">
-                            <div style="font-weight:600; font-size:1.1rem; margin-bottom:0.5rem; color:#2563eb;">
-                                <i class="fas fa-layer-group"></i> {{ cat.name }}
+                        <div *ngFor="let cat of categories; let i = index" class="card summary-card"
+                             style="margin-bottom:1rem;">
+                            <div style="display:flex;align-items:center;justify-content:space-between;">
+                                <div style="font-weight:600; font-size:1.1rem; margin-bottom:0.5rem; color:#2563eb;">
+                                    <i class="fas fa-layer-group"></i> {{ cat.name }}
+                                </div>
+                                <button (click)="removeCategory(i)" class="remove-btn" style="margin-left:1rem;">
+                                    <i class="fas fa-trash"></i> Excluir Categoria
+                                </button>
                             </div>
                             <ul style="margin:0; padding-left:1.2rem;">
                                 <li *ngFor="let exp of cat.expenses">
@@ -160,7 +167,7 @@
                 <h2 class="text-center" style="margin: 0 auto; text-align: center; display: block; width: 100%;">
                     Distribuição do Orçamento</h2>
                 <div class="chart-container" style="margin-top: 1.1rem">
-                    <ng-container *ngIf="salary > 0 && (expenses.length > 0 || totalExpenses > 0); else noChart">
+                    <ng-container *ngIf="salary > 0 && (expenses.length > 0 || categories.length > 0); else noChart">
                         <canvas #budgetChartCanvas></canvas>
                     </ng-container>
                     <ng-template #noChart>
