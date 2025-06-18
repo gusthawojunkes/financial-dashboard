@@ -15,11 +15,12 @@ import Chart from 'chart.js/auto';
 import {FormsModule} from '@angular/forms';
 import {TransactionService} from '../../services/transaction';
 import {Transaction} from '../../models/transaction.model';
+import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, CurrencyPipe, FormsModule],
+    imports: [CommonModule, CurrencyPipe, FormsModule, TransactionsTableComponent],
     templateUrl: './dashboard.html',
     styleUrls: ['./dashboard.scss']
 })
