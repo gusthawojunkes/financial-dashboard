@@ -28,7 +28,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     selectedExpenses: Set<number> = new Set();
     private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
     private readonly remainingColor = '#2563eb';
-    categories: { name: string; expenses: any[] }[] = [];
+    categories: { name: string; expenses: any[]; expanded?: boolean }[] = [];
     newCategoryName: string = '';
     showCategoryInput: boolean = false;
 
@@ -104,6 +104,10 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             const catIdx = this.categories.findIndex(c => c.name === this.selectedCategory);
             if (catIdx !== -1) {
                 this.categories[catIdx].expenses.push(newExpense);
+                // Garante que a propriedade expanded exista
+                if (typeof this.categories[catIdx].expanded === 'undefined') {
+                    this.categories[catIdx].expanded = false;
+                }
                 localStorage.setItem('budget-categories', JSON.stringify(this.categories));
                 this.chartShouldRender = true;
             } else {
@@ -134,7 +138,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.selectedExpenses.size < 1 || !this.newCategoryName.trim()) return;
         const selected = Array.from(this.selectedExpenses).sort((a, b) => b - a);
         const groupedExpenses = selected.map(idx => this.expenses[idx]);
-        this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses});
+        this.categories.push({name: this.newCategoryName.trim(), expenses: groupedExpenses, expanded: false});
         // Remove grouped expenses from main list
         for (const idx of selected) {
             this.expenses.splice(idx, 1);
@@ -151,7 +155,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         const saved = localStorage.getItem('budget-categories');
         if (saved) {
             try {
-                this.categories = JSON.parse(saved);
+                this.categories = JSON.parse(saved).map((cat: any) => ({...cat, expanded: false}));
             } catch {
                 this.categories = [];
             }
@@ -340,5 +344,19 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
         localStorage.setItem('budget-categories', JSON.stringify(this.categories));
         this.chartShouldRender = true;
+    }
+
+    getCategoryTotal(cat: { expenses: any[] }): number {
+        return cat.expenses.reduce((sum, exp) => sum + exp.value, 0);
+    }
+
+    getCategoryPercent(cat: { expenses: any[] }): number {
+        const total = this.getCategoryTotal(cat);
+        return this.salary > 0 ? (total / this.salary) * 100 : 0;
+    }
+
+    toggleCategoryExpanded(index: number) {
+        this.categories[index].expanded = !this.categories[index].expanded;
+        this.cdr.detectChanges();
     }
 }
