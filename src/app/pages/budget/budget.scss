@@ -518,7 +518,7 @@ input:checked + .slider:before {
 
 .category-expense-item .expense-name {
     font-weight: 500;
-    color: #2563eb;
+    color: #6b7280; // changed from blue to gray
     flex: 1 1 0;
     min-width: 0;
     overflow: hidden;
