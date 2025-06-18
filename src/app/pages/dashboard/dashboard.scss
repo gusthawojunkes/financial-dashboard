@@ -156,54 +156,6 @@
     align-items: center;
 }
 
-/* Tabela de Transações */
-.table-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 1rem;
-}
-
-.table-wrapper {
-    overflow-x: auto;
-    overflow: visible; /* Permite que tooltips ultrapassem a tabela */
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-th, td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-thead th {
-    background-color: #f9fafb;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-}
-
-tbody tr {
-    &.revenue-row {
-        background-color: rgba(220, 252, 231, 0.3);
-    }
-
-    &.expense-row {
-        background-color: rgba(254, 226, 226, 0.3);
-    }
-}
-
-td {
-    font-size: 0.875rem;
-    color: #374151;
-}
-
 .category-tag {
     display: inline-flex;
     padding: 0.25rem 0.5rem;
@@ -213,19 +165,6 @@ td {
     border-radius: 9999px;
     background-color: #e5e7eb;
     color: #374151;
-}
-
-/* Classes de Cor para Valores */
-.positive {
-    color: #16a34a;
-}
-
-.negative {
-    color: #dc2626;
-}
-
-.text-right {
-    text-align: right;
 }
 
 /* Mensagem de "Sem Dados" */

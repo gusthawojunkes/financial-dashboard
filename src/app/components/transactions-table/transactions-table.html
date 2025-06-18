@@ -30,7 +30,8 @@
                          width="40" height="40" style="vertical-align:middle;">
                 </td>
                 <td class="text-right" [class.positive]="tx.value > 0" [class.negative]="tx.value < 0"
-                    (mouseenter)="hoveredIndex = i" (mouseleave)="hoveredIndex = null" style="position:relative;">
+                    (mouseenter)="hoveredIndex = i" (mouseleave)="hoveredIndex = null"
+                    style="position:relative; min-width: 3rem;">
                     {{ tx.value | currency:tx.currency }}
                     <div *ngIf="hoveredIndex === i && getConvertedTooltip(tx)" class="custom-tooltip">
                         {{ getConvertedTooltip(tx) }}
