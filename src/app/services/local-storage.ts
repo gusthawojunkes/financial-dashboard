@@ -10,9 +10,9 @@ export class LocalStorageService {
         localStorage.setItem(this.storageKeyPrefix + key, JSON.stringify(value));
     }
 
-    getItem<T>(key: string): T | null {
+    getItem<T>(key: string, defaultValue: any = undefined): T {
         const data = localStorage.getItem(this.storageKeyPrefix + key);
-        return data ? JSON.parse(data) : null;
+        return data ? JSON.parse(data) : defaultValue;
     }
 
     removeItem(key: string): void {
