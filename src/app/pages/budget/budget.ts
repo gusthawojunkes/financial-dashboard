@@ -391,6 +391,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
             categories: this.categories,
             date: new Date()
         });
+        this.loadSavedBudgets();
         alert('Budget salvo com sucesso!');
     }
 
