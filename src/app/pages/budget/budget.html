@@ -1,7 +1,77 @@
 <div class="container">
     <header>
-        <h1>Gerenciador de Orçamento</h1>
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
+            <h1>Gerenciador de Orçamento</h1>
+            <button class="icon-btn" (click)="showBudgetsModal = true" style="gap:0.5rem; font-size:1rem;"
+                    [disabled]="!savedBudgets || savedBudgets.length === 0">
+                <img ngSrc="/assets/icons/save.svg" alt="Budgets Salvos" height="20" width="20"
+                     style="filter: invert(0.2);">
+                Orçamento salvos
+            </button>
+        </div>
     </header>
+
+    <!-- Modal de Budgets Salvos -->
+    <div class="modal-overlay" *ngIf="showBudgetsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 style="display: flex; align-items: center; gap: 0.5rem;">
+                    <img ngSrc="/assets/icons/save.svg" alt="Budgets Salvos" height="22" width="22"
+                         style="filter: invert(0.2);"> Orçamentos salvos
+                </h2>
+                <button class="icon-btn danger" (click)="showBudgetsModal = false" style="padding: 6px 14px;">
+                    <img ngSrc="/assets/icons/close.svg" alt="Fechar" height="18" width="18" style="filter: invert(1)">
+                </button>
+            </div>
+            <div class="saved-budgets-list">
+                <ng-container *ngIf="savedBudgets && savedBudgets.length > 0; else noBudgets">
+                    <div *ngFor="let budget of savedBudgets" class="saved-budget-row">
+                        <div class="saved-budget-info">
+                            <span class="saved-budget-name">
+                                <img ngSrc="/assets/icons/tag.svg" alt="Nome" height="16" width="16"
+                                     style="margin-right: 0.3rem; opacity: 0.7;"> {{ budget.name }}
+                            </span>
+                            <span class="saved-budget-date">
+                                <img ngSrc="/assets/icons/calendar-days.svg" alt="Data" height="15" width="15"
+                                     style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.date | date:'dd/MM/yyyy' }}
+                            </span>
+                            <span class="saved-budget-salary">
+                                <img ngSrc="/assets/icons/bank.svg" alt="Salário" height="15" width="15"
+                                     style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.salary | currency:'BRL' }}
+                            </span>
+                            <span class="saved-budget-expenses">
+                                <img ngSrc="/assets/icons/shopping-cart.svg" alt="Despesas" height="15" width="15"
+                                     style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.expenses?.length || 0 }}
+                                despesas
+                            </span>
+                            <span class="saved-budget-categories">
+                                <img ngSrc="/assets/icons/globe-blue.svg" alt="Categorias" height="15" width="15"
+                                     style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.categories?.length || 0 }}
+                                categorias
+                            </span>
+                        </div>
+                        <div class="saved-budget-actions">
+                            <button class="icon-btn detail-btn" (click)="detailBudget(budget.name)" title="Detalhar">
+                                <img ngSrc="/assets/icons/arrow-trend-up.svg" alt="Detalhar" height="18" width="18">
+                                Detalhar
+                            </button>
+                            <button class="icon-btn danger delete-btn" (click)="deleteBudget(budget.name)"
+                                    title="Excluir">
+                                <img ngSrc="/assets/icons/trash.svg" alt="Excluir" height="18" width="18"
+                                     style="filter: invert(1)">
+                                <span>Excluir</span>
+                            </button>
+                        </div>
+                    </div>
+                </ng-container>
+                <ng-template #noBudgets>
+                    <div class="no-data-container" style="padding: 2rem; text-align: center; color: #888;">
+                        <div>Nenhum orçamento salvo para exibir.</div>
+                    </div>
+                </ng-template>
+            </div>
+        </div>
+    </div>
 
     <div class="budget-columns">
         <div class="input-section">
@@ -57,7 +127,6 @@
                 </div>
             </div>
 
-            <!-- Novo card para cadastro de despesa -->
             <div class="card summary-card budget-summary-card">
                 <h2>Adicionar Despesa</h2>
                 <div class="category-inputs">

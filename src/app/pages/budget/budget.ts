@@ -1,4 +1,12 @@
-import {Component, ChangeDetectorRef, AfterViewInit, AfterViewChecked, ElementRef, ViewChild} from '@angular/core';
+import {
+    Component,
+    ChangeDetectorRef,
+    AfterViewInit,
+    AfterViewChecked,
+    ElementRef,
+    ViewChild,
+    OnInit
+} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import Chart from 'chart.js/auto';
@@ -14,7 +22,7 @@ import {LocalStorageService} from '../../services/local-storage';
     templateUrl: './budget.html',
     styleUrl: './budget.scss'
 })
-export class BudgetComponent implements AfterViewInit, AfterViewChecked {
+export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit {
     salary: number = 0;
     expenseName: string = '';
     expenseValue: number = 0;
@@ -28,6 +36,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     private readonly remainingColor = '#2563eb';
     newCategoryName: string = '';
     showCategoryInput: boolean = false;
+    savedBudgets: any[] = [];
+    showBudgetsModal = false;
 
 
     @ViewChild('budgetChartCanvas', {static: false}) budgetChartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -155,6 +165,21 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     ngOnInit() {
         this.loadCategories();
+        this.loadSavedBudgets();
+    }
+
+    loadSavedBudgets() {
+        this.savedBudgets = this.budgetService.getSavedBudgets();
+    }
+
+    detailBudget(name: string) {
+        this.loadBudgetByName(name);
+    }
+
+    deleteBudget(name: string) {
+        const budgets = this.budgetService.getSavedBudgets().filter(b => b.name !== name);
+        this.budgetService.setSavedBudgets(budgets);
+        this.loadSavedBudgets();
     }
 
     removeExpense(index: number) {
@@ -348,9 +373,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         this.cdr.detectChanges();
     }
 
-    /**
-     * Salva o estado atual do budget com um nome fornecido pelo usuário.
-     */
     saveCurrentBudget() {
         const name = prompt('Digite um nome para este budget:');
         if (!name) return;
@@ -372,9 +394,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         alert('Budget salvo com sucesso!');
     }
 
-    /**
-     * Retorna todos os budgets salvos.
-     */
     getSavedBudgets(): Budget[] {
         return this.budgetService.getSavedBudgets();
     }

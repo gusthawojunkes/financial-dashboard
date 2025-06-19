@@ -17,7 +17,11 @@ export class BudgetService {
     }
 
     getSavedBudgets(): Budget[] {
-        return this.localStorageService.getItem<Budget[]>('saved-budgets') || [];
+        return this.localStorageService.getItem<Budget[]>('budgets') || [];
+    }
+
+    setSavedBudgets(budgets: Budget[]) {
+        this.localStorageService.setItem<Budget[]>('budgets', budgets);
     }
 
     saveBudget(budget: Budget) {
@@ -30,7 +34,7 @@ export class BudgetService {
             budgets.push(budget);
         }
 
-        this.localStorageService.setItem<Budget[]>('budgets', budgets);
+        this.setSavedBudgets(budgets);
     }
 
     getSuggestions() {
