@@ -1,0 +1,44 @@
+<h2 class="main-title">Calculadora de Salário</h2>
+<div class="container">
+    <div class="left-box">
+        <form>
+            <label>
+                Salário Mensal (R$):
+                <input type="number" [(ngModel)]="monthlySalary" name="monthlySalary" min="0" step="0.01"
+                       placeholder="Ex: 3500"/>
+            </label>
+            <br/>
+            <label>
+                Horas Trabalhadas no Mês:
+                <input type="number" [(ngModel)]="hoursWorked" name="hoursWorked" min="1" step="1"
+                       placeholder="Ex: 160"/>
+            </label>
+            <br/>
+            <label>
+                Quanto vale o item que você quer comprar?
+                <input type="number" [(ngModel)]="itemValue" name="itemValue" min="0" step="0.01"
+                       placeholder="Ex: 500"/>
+            </label>
+        </form>
+    </div>
+    <div class="right-box">
+        <div *ngIf="monthlySalary && hoursWorked" class="salary-result result-box">
+            <div class="result-icon">
+                <img src="/assets/icons/money.svg" alt="Ícone valor por hora"/>
+            </div>
+            <div class="result-content">
+                <span class="result-label">Valor por hora</span>
+                <span class="result-value">R$ {{ hourlyRate | number:'1.2-2' }}</span>
+            </div>
+        </div>
+        <div *ngIf="itemValue && hourlyRate" class="salary-result result-box">
+            <div class="result-icon">
+                <img src="/assets/icons/shopping-cart.svg" alt="Ícone horas para comprar"/>
+            </div>
+            <div class="result-content">
+                <span class="result-label">Horas necessárias para comprar o item</span>
+                <span class="result-value">{{ hoursToBuyFormatted }}</span>
+            </div>
+        </div>
+    </div>
+</div>
