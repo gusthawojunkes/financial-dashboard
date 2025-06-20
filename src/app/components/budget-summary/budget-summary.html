@@ -1,0 +1,25 @@
+<div class="card summary-card budget-summary-card">
+    <div class="summary-title">Resumo do Orçamento</div>
+    <div class="budget-summary-values">
+        <div class="budget-summary-item">
+            <span class="budget-summary-label">Salário</span>
+            <span class="budget-summary-value positive">{{ salary | currency:'BRL' }}</span>
+        </div>
+        <div class="budget-summary-item">
+            <span class="budget-summary-label">Despesas</span>
+            <span class="budget-summary-value negative">{{ totalExpenses | currency:'BRL' }}</span>
+        </div>
+        <div class="budget-summary-item">
+            <span class="budget-summary-label">Saldo Restante</span>
+            <span class="budget-summary-value" [class.positive]="remaining >= 0"
+                  [class.negative]="remaining < 0">{{ remaining | currency:'BRL' }}</span>
+        </div>
+        <div class="budget-summary-item">
+            <span class="budget-summary-label">Usado/Restante</span>
+            <span class="budget-summary-value" [class.negative]="percentUsed > 90"
+                  [class.positive]="percentUsed <= 90">
+                {{ percentUsed | number:'1.0-2' }}% / {{ (100 - percentUsed) | number:'1.0-2' }}%
+            </span>
+        </div>
+    </div>
+</div>

@@ -16,7 +16,7 @@ import {CommonModule} from '@angular/common';
     templateUrl: './budget-details.html',
     styleUrl: './budget-details.scss'
 })
-export class BudgetDetails implements OnInit {
+export class BudgetDetailsComponent implements OnInit {
     budget: Budget | null = null;
 
     constructor(private route: ActivatedRoute, private budgetService: BudgetService) {

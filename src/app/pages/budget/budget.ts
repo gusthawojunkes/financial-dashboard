@@ -16,10 +16,11 @@ import {Budget} from '../../models/budget.model';
 import {BudgetService} from '../../services/budget';
 import {LocalStorageService} from '../../services/local-storage';
 import {Router} from '@angular/router';
+import {BudgetSummary} from '../../components/budget-summary/budget-summary';
 
 @Component({
     selector: 'app-budget',
-    imports: [CommonModule, FormsModule, NgOptimizedImage],
+    imports: [CommonModule, FormsModule, NgOptimizedImage, BudgetSummary],
     templateUrl: './budget.html',
     styleUrl: './budget.scss'
 })
