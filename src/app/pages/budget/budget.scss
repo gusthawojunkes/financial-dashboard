@@ -113,6 +113,25 @@ button.danger:hover, .remove-btn:hover {
     width: 100%;
 }
 
+.card.summary-card.budget-summary-card {
+    margin-bottom: 2rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px #0001;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.card.summary-card.budget-summary-card input[type="number"]#salary {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    display: block;
+}
+
 .category-select-container {
     margin-bottom: 1rem;
 }

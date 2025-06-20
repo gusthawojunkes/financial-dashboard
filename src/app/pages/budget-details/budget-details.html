@@ -3,6 +3,14 @@
         [salary]="b.salary || 0"
         [totalExpenses]="totalExpenses"
     />
+    <div class="card" style="margin-bottom: 2rem">
+        <app-budget-distribution-chart
+            [salary]="b.salary"
+            [expenses]="b.expenses"
+            [categories]="b.categories"
+        />
+    </div>
+    
     <div class="card">
         <div class="budget-header">
             <h2>

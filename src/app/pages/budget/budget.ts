@@ -17,10 +17,11 @@ import {BudgetService} from '../../services/budget';
 import {LocalStorageService} from '../../services/local-storage';
 import {Router} from '@angular/router';
 import {BudgetSummary} from '../../components/budget-summary/budget-summary';
+import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
 
 @Component({
     selector: 'app-budget',
-    imports: [CommonModule, FormsModule, NgOptimizedImage, BudgetSummary],
+    imports: [CommonModule, FormsModule, NgOptimizedImage, BudgetSummary, BudgetDistributionChart],
     templateUrl: './budget.html',
     styleUrl: './budget.scss'
 })
@@ -246,7 +247,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     }
 
     renderChart() {
-        // Corrige condição para exibir o gráfico: deve considerar despesas OU categorias
         const hasData = (this.expenses.length > 0 || this.categories.length > 0);
         if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && hasData)) {
             if (this.chart) {

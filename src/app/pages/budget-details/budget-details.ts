@@ -5,6 +5,7 @@ import {Budget} from '../../models/budget.model';
 import {CurrencyPipe, DatePipe, DecimalPipe} from '@angular/common';
 import {CommonModule} from '@angular/common';
 import {BudgetSummary} from '../../components/budget-summary/budget-summary';
+import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
 
 @Component({
     selector: 'app-budget-details',
@@ -13,7 +14,8 @@ import {BudgetSummary} from '../../components/budget-summary/budget-summary';
         CurrencyPipe,
         DecimalPipe,
         DatePipe,
-        BudgetSummary
+        BudgetSummary,
+        BudgetDistributionChart
     ],
     templateUrl: './budget-details.html',
     styleUrl: './budget-details.scss'

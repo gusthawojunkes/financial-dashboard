@@ -1,0 +1,16 @@
+<h2 class="text-center" style="margin: 0 auto; text-align: center; display: block; width: 100%;">
+    Distribuição do Orçamento
+</h2>
+<div class="chart-container" style="margin-top: 1.1rem">
+    <ng-container *ngIf="salary > 0 && (expenses.length > 0 || categories.length > 0); else noChart">
+        <canvas #budgetChartCanvas></canvas>
+    </ng-container>
+    <ng-template #noChart>
+        <div class="no-data-container">
+            <h2>Nenhum dado para exibir o gráfico</h2>
+            <p>Adicione um salário e pelo menos uma despesa para visualizar o gráfico.</p>
+        </div>
+    </ng-template>
+</div>
+<div id="chart-legend" class="chart-legend"></div>
+
