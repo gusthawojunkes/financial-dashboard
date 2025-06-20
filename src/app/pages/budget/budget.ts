@@ -58,15 +58,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
         return expensesSum + categoriesSum;
     }
 
-    get remaining(): number {
-        return this.salary - this.totalExpenses;
-    }
-
-    get percentUsed(): number {
-        if (!this.salary || this.salary === 0) return 0;
-        return (this.totalExpenses / this.salary) * 100;
-    }
-
     ngAfterViewInit() {
         this.chartShouldRender = true;
         this.renderChart();

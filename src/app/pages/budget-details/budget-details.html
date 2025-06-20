@@ -1,53 +1,60 @@
-<div class="budget-details-container" *ngIf="budget as b; else notFound">
-    <div class="budget-header">
-        <h1>
-            <img src="/assets/icons/tag.svg" alt="Orçamento" height="28" width="28"
-                 style="vertical-align: middle; margin-right: 0.5rem; opacity: 0.7;">
-            Detalhes do Orçamento
-        </h1>
-        <div class="budget-meta">
+<div *ngIf="budget as b; else notFound">
+    <app-budget-summary
+        [salary]="b.salary || 0"
+        [totalExpenses]="totalExpenses"
+    />
+    <div class="card">
+        <div class="budget-header">
+            <h2>
+                <img src="/assets/icons/tag.svg" alt="Orçamento" height="28" width="28"
+                     style="vertical-align: middle; margin-right: 0.5rem; opacity: 0.7;">
+                Detalhes do Orçamento
+            </h2>
+            <div class="budget-meta">
             <span><img src="/assets/icons/calendar-days.svg" alt="Data" height="18" width="18"
                        style="margin-right: 0.2rem; opacity: 0.7;"> {{ b.date ? (b.date | date:'dd/MM/yyyy') : '-' }}</span>
-            <span><img src="/assets/icons/bank.svg" alt="Salário" height="18" width="18"
-                       style="margin-right: 0.2rem; opacity: 0.7;"> {{ b.salary != null ? (b.salary | currency:'BRL') : '-' }}</span>
+                <span><img src="/assets/icons/bank.svg" alt="Salário" height="18" width="18"
+                           style="margin-right: 0.2rem; opacity: 0.7;"> {{ b.salary != null ? (b.salary | currency:'BRL') : '-' }}</span>
+            </div>
         </div>
+
+        <section class="budget-section">
+            <h2><img src="/assets/icons/shopping-cart.svg" alt="Despesas" height="22" width="22"
+                     style="margin-right: 0.3rem; opacity: 0.7;"> Despesas</h2>
+            <ul *ngIf="b.expenses && b.expenses.length > 0; else noExpenses">
+                <li *ngFor="let exp of b.expenses">
+                    <span class="expense-name">{{ exp.name }}</span>
+                    <span class="expense-value">{{ exp.value | currency:'BRL' }}</span>
+                    <span class="expense-percent">({{ exp.percent | number:'1.2-2' }}%)</span>
+                </li>
+            </ul>
+            <ng-template #noExpenses>
+                <p class="empty-msg">Nenhuma despesa cadastrada.</p>
+            </ng-template>
+        </section>
+
+        <section class="budget-section">
+            <h2><img src="/assets/icons/globe-blue.svg" alt="Categorias" height="22" width="22"
+                     style="margin-right: 0.3rem; opacity: 0.7;"> Categorias</h2>
+            <ul *ngIf="b.categories && b.categories.length > 0; else noCategories">
+                <li *ngFor="let cat of b.categories" class="category-item">
+                    <strong>{{ cat.name }}</strong>
+                    <ul>
+                        <li *ngFor="let exp of cat.expenses">
+                            <span class="expense-name">{{ exp.name }}</span>
+                            <span class="expense-value">{{ exp.value | currency:'BRL' }}</span>
+                            <span class="expense-percent">({{ exp.percent | number:'1.2-2' }}%)</span>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <ng-template #noCategories>
+                <p class="empty-msg">Nenhuma categoria cadastrada.</p>
+            </ng-template>
+        </section>
     </div>
-
-    <section class="budget-section">
-        <h2><img src="/assets/icons/shopping-cart.svg" alt="Despesas" height="22" width="22"
-                 style="margin-right: 0.3rem; opacity: 0.7;"> Despesas</h2>
-        <ul *ngIf="b.expenses && b.expenses.length > 0; else noExpenses">
-            <li *ngFor="let exp of b.expenses">
-                <span class="expense-name">{{ exp.name }}</span>
-                <span class="expense-value">{{ exp.value | currency:'BRL' }}</span>
-                <span class="expense-percent">({{ exp.percent | number:'1.2-2' }}%)</span>
-            </li>
-        </ul>
-        <ng-template #noExpenses>
-            <p class="empty-msg">Nenhuma despesa cadastrada.</p>
-        </ng-template>
-    </section>
-
-    <section class="budget-section">
-        <h2><img src="/assets/icons/globe-blue.svg" alt="Categorias" height="22" width="22"
-                 style="margin-right: 0.3rem; opacity: 0.7;"> Categorias</h2>
-        <ul *ngIf="b.categories && b.categories.length > 0; else noCategories">
-            <li *ngFor="let cat of b.categories" class="category-item">
-                <strong>{{ cat.name }}</strong>
-                <ul>
-                    <li *ngFor="let exp of cat.expenses">
-                        <span class="expense-name">{{ exp.name }}</span>
-                        <span class="expense-value">{{ exp.value | currency:'BRL' }}</span>
-                        <span class="expense-percent">({{ exp.percent | number:'1.2-2' }}%)</span>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        <ng-template #noCategories>
-            <p class="empty-msg">Nenhuma categoria cadastrada.</p>
-        </ng-template>
-    </section>
 </div>
+
 <ng-template #notFound>
     <div class="not-found">
         <img src="/assets/icons/close.svg" alt="Não encontrado" height="40" width="40"
