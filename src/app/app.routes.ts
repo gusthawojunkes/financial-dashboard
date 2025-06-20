@@ -5,6 +5,7 @@ import {AIComponent} from './pages/ai/ai';
 import {BudgetComponent} from './pages/budget/budget';
 import {TransactionsDetailsComponent} from './pages/transactions-details/transactions-details';
 import {SalaryCalculatorComponent} from './pages/salary-calculator/salary-calculator';
+import {BudgetDetails} from './pages/budget-details/budget-details';
 
 
 export const routes: Routes = [
@@ -14,6 +15,7 @@ export const routes: Routes = [
     {path: 'budget', component: BudgetComponent},
     {path: 'transactions/:year/:month', component: TransactionsDetailsComponent},
     {path: 'calculator', component: SalaryCalculatorComponent},
+    {path: 'budget/details/:id', component: BudgetDetails},
     {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
     {path: '**', redirectTo: '/dashboard'}
 ];

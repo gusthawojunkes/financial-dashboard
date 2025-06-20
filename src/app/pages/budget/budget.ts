@@ -15,6 +15,7 @@ import {Category} from '../../models/categorie.model';
 import {Budget} from '../../models/budget.model';
 import {BudgetService} from '../../services/budget';
 import {LocalStorageService} from '../../services/local-storage';
+import {Router} from '@angular/router';
 
 @Component({
     selector: 'app-budget',
@@ -45,7 +46,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
 
     private chartShouldRender = false;
 
-    constructor(private cdr: ChangeDetectorRef, private budgetService: BudgetService, private localStorageService: LocalStorageService) {
+    constructor(private cdr: ChangeDetectorRef, private budgetService: BudgetService, private localStorageService: LocalStorageService, private router: Router) {
         this.salary = this.localStorageService.getItem<number>('budget-salary', 0);
         this.expenses = this.localStorageService.getItem<Expense[]>('budget-expenses', []);
     }
@@ -173,7 +174,11 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     }
 
     detailBudget(name: string) {
-        this.loadBudgetByName(name);
+        // Busca o budget pelo nome para obter o id (ou usa o nome como id)
+        const budget = this.savedBudgets.find(b => b.name === name);
+        if (budget) {
+            this.router.navigate(['/budget/details', budget.name]);
+        }
     }
 
     deleteBudget(name: string) {

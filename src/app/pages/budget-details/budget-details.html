@@ -1,0 +1,33 @@
+<div *ngIf="budget as b; else notFound">
+    <h1>Detalhes do Orçamento: {{ b.name }}</h1>
+    <p><strong>Data:</strong> {{ b.date ? (b.date | date:'dd/MM/yyyy') : '-' }}</p>
+    <p><strong>Salário:</strong> {{ b.salary != null ? (b.salary | currency:'BRL') : '-' }}</p>
+
+    <h2>Despesas</h2>
+    <ul *ngIf="b.expenses && b.expenses.length > 0; else noExpenses">
+        <li *ngFor="let exp of b.expenses">
+            {{ exp.name }} - {{ exp.value | currency:'BRL' }} ({{ exp.percent | number:'1.2-2' }}%)
+        </li>
+    </ul>
+    <ng-template #noExpenses>
+        <p>Nenhuma despesa cadastrada.</p>
+    </ng-template>
+
+    <h2>Categorias</h2>
+    <ul *ngIf="b.categories && b.categories.length > 0; else noCategories">
+        <li *ngFor="let cat of b.categories">
+            <strong>{{ cat.name }}</strong>
+            <ul>
+                <li *ngFor="let exp of cat.expenses">
+                    {{ exp.name }} - {{ exp.value | currency:'BRL' }} ({{ exp.percent | number:'1.2-2' }}%)
+                </li>
+            </ul>
+        </li>
+    </ul>
+    <ng-template #noCategories>
+        <p>Nenhuma categoria cadastrada.</p>
+    </ng-template>
+</div>
+<ng-template #notFound>
+    <h2>Orçamento não encontrado.</h2>
+</ng-template>
