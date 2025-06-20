@@ -25,7 +25,7 @@ export class BudgetDetails implements OnInit {
     ngOnInit() {
         const id = this.route.snapshot.paramMap.get('id');
         if (id) {
-            this.budget = this.budgetService.findBudgetByName(id);
+            this.budget = this.budgetService.findBudgetById(id);
         }
     }
 }

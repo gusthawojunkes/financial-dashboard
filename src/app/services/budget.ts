@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Budget} from '../models/budget.model';
 import {LocalStorageService} from './local-storage';
-import {Expense} from '../models/expense.model';
+import StringHelper from '../helper/string.helper';
 
 @Injectable({
     providedIn: 'root'
@@ -16,6 +16,11 @@ export class BudgetService {
         return budgets.find(b => b.name === name) || null;
     }
 
+    findBudgetById(id: string): Budget | null {
+        const budgets = this.getSavedBudgets();
+        return budgets.find(b => b.id === id) || null;
+    }
+
     getSavedBudgets(): Budget[] {
         return this.localStorageService.getItem<Budget[]>('budgets') || [];
     }
@@ -26,8 +31,13 @@ export class BudgetService {
 
     saveBudget(budget: Budget) {
         const budgets = this.getSavedBudgets();
-        const existingIndex = budgets.findIndex(b => b.name === budget.name);
-
+        let existingIndex = -1;
+        if (budget.id) {
+            existingIndex = budgets.findIndex(b => b.id === budget.id);
+        }
+        if (!budget.id) {
+            budget.id = StringHelper.generateUUID();
+        }
         if (existingIndex > -1) {
             budgets[existingIndex] = budget;
         } else {

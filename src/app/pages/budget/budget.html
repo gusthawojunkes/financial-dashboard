@@ -51,11 +51,11 @@
                             </span>
                         </div>
                         <div class="saved-budget-actions">
-                            <button class="icon-btn detail-btn" (click)="detailBudget(budget.name)" title="Detalhar">
+                            <button class="icon-btn detail-btn" (click)="detailBudget(budget.id)" title="Detalhar">
                                 <img ngSrc="/assets/icons/arrow-trend-up.svg" alt="Detalhar" height="18" width="18">
                                 Detalhar
                             </button>
-                            <button class="icon-btn danger delete-btn" (click)="deleteBudget(budget.name)"
+                            <button class="icon-btn danger delete-btn" (click)="deleteBudget(budget.id)"
                                     title="Excluir">
                                 <img ngSrc="/assets/icons/trash.svg" alt="Excluir" height="18" width="18"
                                      style="filter: invert(1)">

@@ -173,16 +173,15 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
         this.savedBudgets = this.budgetService.getSavedBudgets();
     }
 
-    detailBudget(name: string) {
-        // Busca o budget pelo nome para obter o id (ou usa o nome como id)
-        const budget = this.savedBudgets.find(b => b.name === name);
+    detailBudget(id: string) {
+        const budget = this.savedBudgets.find(b => b.id === id);
         if (budget) {
-            this.router.navigate(['/budget/details', budget.name]);
+            this.router.navigate(['/budget/details', budget.id]);
         }
     }
 
-    deleteBudget(name: string) {
-        const budgets = this.budgetService.getSavedBudgets().filter(b => b.name !== name);
+    deleteBudget(id: string) {
+        const budgets = this.budgetService.getSavedBudgets().filter(b => b.id !== id);
         this.budgetService.setSavedBudgets(budgets);
         this.loadSavedBudgets();
     }
@@ -382,14 +381,12 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
         const name = prompt('Digite um nome para este budget:');
         if (!name) return;
         const savedBudgets: Budget[] = this.getSavedBudgets();
-
-
         if (savedBudgets.some(b => b.name === name)) {
             alert('Já existe um budget salvo com esse nome. Escolha outro nome.');
             return;
         }
-
         this.budgetService.saveBudget({
+            id: '', // será gerado no service
             name,
             salary: this.salary,
             expenses: this.expenses,
@@ -407,8 +404,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     /**
      * Carrega um budget salvo pelo nome.
      */
-    loadBudgetByName(name: string) {
-        const budget = this.budgetService.findBudgetByName(name);
+    loadBudgetByName(id: string) {
+        const budget = this.budgetService.findBudgetById(id);
         if (!budget) {
             alert('Budget não encontrado.');
             return;
