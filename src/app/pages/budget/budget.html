@@ -39,9 +39,9 @@
                                      style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.salary | currency:'BRL' }}
                             </span>
                             <span class="saved-budget-expenses">
-                                <img ngSrc="/assets/icons/shopping-cart.svg" alt="Despesas" height="15" width="15"
+                                <img ngSrc="/assets/icons/shopping-cart.svg" alt="Saídas" height="15" width="15"
                                      style="margin-right: 0.2rem; opacity: 0.7;"> {{ budget.expenses?.length || 0 }}
-                                despesas
+                                saídas
                             </span>
                             <span class="saved-budget-categories">
                                 <img ngSrc="/assets/icons/globe-blue.svg" alt="Categorias" height="15" width="15"
@@ -137,7 +137,7 @@
             </div>
 
             <div class="card summary-card budget-summary-card">
-                <h2>Despesas</h2>
+                <h2>Saídas</h2>
                 <div class="expenses-list" id="expenses-list">
                     <div class="expenses-actions-row"
                          style="display: flex; flex-direction: row; align-items: center; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;">

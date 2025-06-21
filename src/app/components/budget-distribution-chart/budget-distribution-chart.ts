@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import Chart from 'chart.js/auto';
 import {CommonModule} from '@angular/common';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-budget-distribution-chart',
@@ -24,7 +25,7 @@ export class BudgetDistributionChart implements AfterViewInit, AfterViewChecked,
     chart: Chart | null = null;
 
     private chartShouldRender = false;
-    private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
+    private readonly expenseColors = Helper.categoryColors;
     private readonly remainingColor = '#2563eb';
 
     ngAfterViewInit() {

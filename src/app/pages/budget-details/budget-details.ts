@@ -15,7 +15,7 @@ import {BudgetDistributionChart} from '../../components/budget-distribution-char
         DecimalPipe,
         DatePipe,
         BudgetSummary,
-        BudgetDistributionChart
+        BudgetDistributionChart,
     ],
     templateUrl: './budget-details.html',
     styleUrl: './budget-details.scss'
@@ -30,6 +30,12 @@ export class BudgetDetailsComponent implements OnInit {
         const expensesSum = this.budget?.expenses.reduce((sum, exp) => sum + exp.value, 0);
         const categoriesSum = this.budget?.categories.reduce((catSum, cat) => catSum + cat.expenses.reduce((sum, exp) => sum + exp.value, 0), 0);
         return (expensesSum || 0) + (categoriesSum || 0);
+    }
+
+    get totalExpensesQuantity(): number {
+        const expensesCount = this.budget?.expenses.length || 0;
+        const categoriesCount = this.budget?.categories.reduce((count, cat) => count + cat.expenses.length, 0) || 0;
+        return expensesCount + categoriesCount;
     }
 
     ngOnInit() {

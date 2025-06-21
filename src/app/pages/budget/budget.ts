@@ -18,6 +18,7 @@ import {LocalStorageService} from '../../services/local-storage';
 import {Router} from '@angular/router';
 import {BudgetSummary} from '../../components/budget-summary/budget-summary';
 import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-budget',
@@ -35,7 +36,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     expenses: Expense[] = [];
     categories: Category[] = [];
     selectedExpenses: Set<number> = new Set();
-    private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
+    private readonly expenseColors = Helper.categoryColors;
     private readonly remainingColor = '#2563eb';
     newCategoryName: string = '';
     showCategoryInput: boolean = false;
@@ -199,7 +200,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     }
 
     confirmResetData() {
-        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação irá excluir todas as despesas, categorias e o salário.')) {
+        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação irá excluir todas as saídas, categorias e o salário.')) {
             this.resetData();
         }
     }
@@ -224,7 +225,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
         this.salary = value;
         this.localStorageService.setItem('budget-salary', value);
         this.recalculatePercentageExpenses();
-        // Recalcula despesas das categorias agrupadas
         this.categories = this.categories.map(cat => ({
             ...cat,
             expenses: cat.expenses.map(exp => {
@@ -319,7 +319,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
         const hasCategories = this.categories && this.categories.length > 0;
         let confirmed = true;
         if (hasExpenses || hasCategories) {
-            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes (despesas e categorias) serão excluídos e substituídos pela sugestão. Deseja continuar?');
+            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes (saídas e categorias) serão excluídos e substituídos pela sugestão. Deseja continuar?');
         }
         if (!confirmed) return;
         if (hasCategories) {
