@@ -1,36 +1,47 @@
-import {Component, ChangeDetectorRef, AfterViewInit, AfterViewChecked, ElementRef, ViewChild} from '@angular/core';
+import {
+    Component,
+    ChangeDetectorRef,
+    AfterViewInit,
+    AfterViewChecked,
+    ElementRef,
+    ViewChild,
+    OnInit
+} from '@angular/core';
 import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import Chart from 'chart.js/auto';
+import {Expense} from '../../models/expense.model';
+import {Category} from '../../models/categorie.model';
+import {Budget} from '../../models/budget.model';
+import {BudgetService} from '../../services/budget';
+import {LocalStorageService} from '../../services/local-storage';
+import {Router} from '@angular/router';
+import {BudgetSummary} from '../../components/budget-summary/budget-summary';
+import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-budget',
-    imports: [CommonModule, FormsModule, NgOptimizedImage],
+    imports: [CommonModule, FormsModule, NgOptimizedImage, BudgetSummary, BudgetDistributionChart],
     templateUrl: './budget.html',
     styleUrl: './budget.scss'
 })
-export class BudgetComponent implements AfterViewInit, AfterViewChecked {
+export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit {
     salary: number = 0;
     expenseName: string = '';
     expenseValue: number = 0;
     isPercentage: boolean = false;
     selectedCategory: string | null = null;
 
-    expenses: {
-        name: string;
-        value: number;
-        percent: number;
-        color: string;
-        isPercent: boolean;
-        selected?: boolean;
-        category?: string;
-    }[] = [];
+    expenses: Expense[] = [];
+    categories: Category[] = [];
     selectedExpenses: Set<number> = new Set();
-    private readonly expenseColors = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15'];
+    private readonly expenseColors = Helper.categoryColors;
     private readonly remainingColor = '#2563eb';
-    categories: { name: string; expenses: any[]; expanded?: boolean }[] = [];
     newCategoryName: string = '';
     showCategoryInput: boolean = false;
+    savedBudgets: any[] = [];
+    showBudgetsModal = false;
 
 
     @ViewChild('budgetChartCanvas', {static: false}) budgetChartCanvas!: ElementRef<HTMLCanvasElement>;
@@ -38,35 +49,15 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     private chartShouldRender = false;
 
-    constructor(private cdr: ChangeDetectorRef) {
-        const savedSalary = localStorage.getItem('budget-salary');
-        if (savedSalary !== null) {
-            this.salary = parseFloat(savedSalary);
-        }
-        const savedExpenses = localStorage.getItem('budget-expenses');
-        if (savedExpenses) {
-            try {
-                this.expenses = JSON.parse(savedExpenses);
-            } catch (e) {
-                this.expenses = [];
-            }
-        }
+    constructor(private cdr: ChangeDetectorRef, private budgetService: BudgetService, private localStorageService: LocalStorageService, private router: Router) {
+        this.salary = this.localStorageService.getItem<number>('budget-salary', 0);
+        this.expenses = this.localStorageService.getItem<Expense[]>('budget-expenses', []);
     }
 
     get totalExpenses(): number {
-        // Soma despesas individuais + total das categorias agrupadas
         const expensesSum = this.expenses.reduce((sum, exp) => sum + exp.value, 0);
         const categoriesSum = this.categories.reduce((catSum, cat) => catSum + cat.expenses.reduce((sum, exp) => sum + exp.value, 0), 0);
         return expensesSum + categoriesSum;
-    }
-
-    get remaining(): number {
-        return this.salary - this.totalExpenses;
-    }
-
-    get percentUsed(): number {
-        if (!this.salary || this.salary === 0) return 0;
-        return (this.totalExpenses / this.salary) * 100;
     }
 
     ngAfterViewInit() {
@@ -93,7 +84,6 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             value = this.expenseValue;
             percent = this.salary > 0 ? (value / this.salary) * 100 : 0;
         }
-        // Corrige cor para despesas em categorias (mantém paleta, mas não depende do length da lista principal)
         const color = this.expenseColors[(this.expenses.length + this.categories.reduce((acc, c) => acc + c.expenses.length, 0)) % this.expenseColors.length];
         const newExpense = {
             name: this.expenseName,
@@ -105,24 +95,22 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             category: this.selectedCategory || '',
         };
         if (this.selectedCategory) {
-            // Se a categoria já existe, adiciona direto nela
             const catIdx = this.categories.findIndex(c => c.name === this.selectedCategory);
             if (catIdx !== -1) {
                 this.categories[catIdx].expenses.push(newExpense);
-                // Garante que a propriedade expanded exista
                 if (typeof this.categories[catIdx].expanded === 'undefined') {
                     this.categories[catIdx].expanded = false;
                 }
-                localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+                this.localStorageService.setItem('budget-categories', this.categories);
                 this.chartShouldRender = true;
             } else {
                 this.expenses.push(newExpense);
-                localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+                this.localStorageService.setItem('budget-expenses', this.expenses);
                 this.chartShouldRender = true;
             }
         } else {
             this.expenses.push(newExpense);
-            localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+            this.localStorageService.setItem('budget-expenses', this.expenses);
             this.chartShouldRender = true;
         }
         this.expenseName = '';
@@ -151,18 +139,18 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         this.selectedExpenses.clear();
         this.newCategoryName = '';
         this.showCategoryInput = false;
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
-        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+        this.localStorageService.setItem('budget-expenses', this.expenses);
+        this.localStorageService.setItem('budget-categories', this.categories);
         this.chartShouldRender = true;
     }
 
     loadCategories() {
-        const saved = localStorage.getItem('budget-categories');
+        const saved = this.localStorageService.getItem<any[]>('budget-categories');
         if (saved) {
             try {
-                this.categories = JSON.parse(saved).map((cat: any, idx: number) => ({
+                this.categories = saved.map((cat: any, idx: number) => ({
                     ...cat,
-                    expanded: idx < 3 ? true : false
+                    expanded: idx < 3
                 }));
             } catch {
                 this.categories = [];
@@ -172,21 +160,39 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     ngOnInit() {
         this.loadCategories();
+        this.loadSavedBudgets();
+    }
+
+    loadSavedBudgets() {
+        this.savedBudgets = this.budgetService.getSavedBudgets();
+    }
+
+    detailBudget(id: string) {
+        const budget = this.savedBudgets.find(b => b.id === id);
+        if (budget) {
+            this.router.navigate(['/budget/details', budget.id]);
+        }
+    }
+
+    deleteBudget(id: string) {
+        const budgets = this.budgetService.getSavedBudgets().filter(b => b.id !== id);
+        this.budgetService.setSavedBudgets(budgets);
+        this.loadSavedBudgets();
     }
 
     removeExpense(index: number) {
         this.expenses.splice(index, 1);
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        this.localStorageService.setItem('budget-expenses', this.expenses);
         this.chartShouldRender = true;
     }
 
     resetData() {
         this.salary = 0;
-        localStorage.removeItem('budget-salary');
+        this.localStorageService.removeItem('budget-salary');
         this.expenses = [];
-        localStorage.removeItem('budget-expenses');
+        this.localStorageService.removeItem('budget-expenses');
         this.categories = [];
-        localStorage.removeItem('budget-categories');
+        this.localStorageService.removeItem('budget-categories');
         this.expenseName = '';
         this.expenseValue = 0;
         this.selectedCategory = '';
@@ -194,7 +200,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     }
 
     confirmResetData() {
-        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação irá excluir todas as despesas, categorias e o salário.')) {
+        if (confirm('Tem certeza que deseja limpar todos os dados? Esta ação irá excluir todas as saídas, categorias e o salário.')) {
             this.resetData();
         }
     }
@@ -217,8 +223,8 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
 
     setSalary(value: number) {
         this.salary = value;
+        this.localStorageService.setItem('budget-salary', value);
         this.recalculatePercentageExpenses();
-        // Recalcula despesas das categorias agrupadas
         this.categories = this.categories.map(cat => ({
             ...cat,
             expenses: cat.expenses.map(exp => {
@@ -235,14 +241,12 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
                 }
             })
         }));
-        localStorage.setItem('budget-salary', String(value));
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
-        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+        this.localStorageService.setItem('budget-expenses', this.expenses);
+        this.localStorageService.setItem('budget-categories', this.categories);
         this.chartShouldRender = true;
     }
 
     renderChart() {
-        // Corrige condição para exibir o gráfico: deve considerar despesas OU categorias
         const hasData = (this.expenses.length > 0 || this.categories.length > 0);
         if (!this.budgetChartCanvas || !this.budgetChartCanvas.nativeElement || !(this.salary > 0 && hasData)) {
             if (this.chart) {
@@ -257,24 +261,20 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         if (this.chart) {
             this.chart.destroy();
         }
-        // Monta lista de labels, valores e cores: despesas + categorias agrupadas
         const chartLabels: string[] = [];
         const chartData: number[] = [];
         const chartColors: string[] = [];
-        // Despesas individuais
         this.expenses.forEach((e, i) => {
             chartLabels.push(e.name);
             chartData.push(e.value);
             chartColors.push(this.expenseColors[i % this.expenseColors.length]);
         });
-        // Categorias agrupadas
         this.categories.forEach((cat, i) => {
             chartLabels.push(cat.name);
             const total = cat.expenses.reduce((sum, exp) => sum + exp.value, 0);
             chartData.push(total);
             chartColors.push(this.expenseColors[(this.expenses.length + i) % this.expenseColors.length]);
         });
-        // Saldo restante
         chartLabels.push('Saldo Restante');
         const used = chartData.reduce((a, b) => a + b, 0);
         chartData.push(Math.max(this.salary - used, 0));
@@ -319,23 +319,15 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
         const hasCategories = this.categories && this.categories.length > 0;
         let confirmed = true;
         if (hasExpenses || hasCategories) {
-            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes (despesas e categorias) serão excluídos e substituídos pela sugestão. Deseja continuar?');
+            confirmed = confirm('Ao sugerir orçamento, todos os dados existentes (saídas e categorias) serão excluídos e substituídos pela sugestão. Deseja continuar?');
         }
         if (!confirmed) return;
         if (hasCategories) {
             this.categories = [];
-            localStorage.removeItem('budget-categories');
+            this.localStorageService.removeItem('budget-categories');
         }
-        const suggestions = [
-            {name: 'Moradia', percent: 30, category: 'moradia'},
-            {name: 'Alimentação', percent: 15, category: 'alimentacao'},
-            {name: 'Saúde', percent: 10, category: 'saude'},
-            {name: 'Educação', percent: 4, category: 'educacao'},
-            {name: 'Transporte', percent: 8, category: 'transporte'},
-            {name: 'Lazer', percent: 10, category: 'lazer'},
-            {name: 'Extra', percent: 8, category: 'extra'},
-            {name: 'Investimentos', percent: 15, category: 'investimentos'},
-        ];
+
+        const suggestions = this.budgetService.getSuggestions();
         this.expenses = suggestions.map((s, i) => ({
             name: s.name,
             value: (this.salary * s.percent) / 100,
@@ -345,7 +337,7 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
             selected: false,
             category: s.category
         }));
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
+        this.localStorageService.setItem('budget-expenses', this.expenses);
         this.expenseName = '';
         this.expenseValue = 0;
         this.selectedCategory = '';
@@ -353,15 +345,13 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     }
 
     removeCategory(index: number) {
-        // Recupera despesas da categoria e devolve para a lista principal
         const removed = this.categories.splice(index, 1)[0];
         if (removed && removed.expenses) {
-            // Remove seleção das despesas recuperadas
             removed.expenses.forEach(exp => exp.selected = false);
             this.expenses = this.expenses.concat(removed.expenses);
         }
-        localStorage.setItem('budget-expenses', JSON.stringify(this.expenses));
-        localStorage.setItem('budget-categories', JSON.stringify(this.categories));
+        this.localStorageService.setItem('budget-expenses', this.expenses);
+        this.localStorageService.setItem('budget-categories', this.categories);
         this.chartShouldRender = true;
     }
 
@@ -377,5 +367,44 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked {
     toggleCategoryExpanded(index: number) {
         this.categories[index].expanded = !this.categories[index].expanded;
         this.cdr.detectChanges();
+    }
+
+    saveCurrentBudget() {
+        const name = prompt('Digite um nome para este budget:');
+        if (!name) return;
+        const savedBudgets: Budget[] = this.getSavedBudgets();
+        if (savedBudgets.some(b => b.name === name)) {
+            alert('Já existe um budget salvo com esse nome. Escolha outro nome.');
+            return;
+        }
+        this.budgetService.saveBudget({
+            id: '', // será gerado no service
+            name,
+            salary: this.salary,
+            expenses: this.expenses,
+            categories: this.categories,
+            date: new Date()
+        });
+        this.loadSavedBudgets();
+        alert('Budget salvo com sucesso!');
+    }
+
+    getSavedBudgets(): Budget[] {
+        return this.budgetService.getSavedBudgets();
+    }
+
+    /**
+     * Carrega um budget salvo pelo nome.
+     */
+    loadBudgetByName(id: string) {
+        const budget = this.budgetService.findBudgetById(id);
+        if (!budget) {
+            alert('Budget não encontrado.');
+            return;
+        }
+        // this.salary = budget.salary;
+        // this.expenses = budget.expenses;
+        // this.categories = budget.categories;
+        // this.chartShouldRender = true;
     }
 }

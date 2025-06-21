@@ -16,6 +16,7 @@ import {Transaction} from '../../models/transaction.model';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 import {Router} from '@angular/router';
 import DateHelper from '../../helper/date.helper';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-dashboard',
@@ -34,6 +35,8 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public availableMonthsByYear: { [year: number]: number[] } = {};
     public selectedYear: number | null = null;
     public selectedMonth: number | null = null;
+
+    private colors = Helper.categoryColors;
 
     transactions: Transaction[] = [];
     summary = {revenue: 0, expenses: 0, balance: 0};
@@ -353,8 +356,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     private generateColors(numColors: number): string[] {
-        const colors = ['#ef4444', '#f97316', '#eab308', '#84cc16', '#22c55e', '#14b8a6', '#0ea5e9', '#6366f1', '#a855f7', '#d946ef'];
-        return Array.from({length: numColors}, (_, i) => colors[i % colors.length]);
+        return Array.from({length: numColors}, (_, i) => this.colors[i % this.colors.length]);
     }
 
     getCategoryIcon(category: string | undefined): string {

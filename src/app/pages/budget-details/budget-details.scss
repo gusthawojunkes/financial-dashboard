@@ -1,0 +1,150 @@
+.budget-header {
+
+    .budget-meta {
+        display: flex;
+        gap: 2rem;
+        font-size: 0.93rem;
+        color: #666;
+
+        span {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+    }
+}
+
+.budget-section {
+    margin-bottom: 2rem;
+
+    h2 {
+        font-size: 1.2rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        color: #000;
+    }
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f7fafd;
+        border-radius: 8px;
+        padding: 0.7rem 1rem;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        box-shadow: 0 1px 2px rgba(25, 118, 210, 0.04);
+    }
+
+    .category-item {
+        flex-direction: column;
+        align-items: flex-start;
+        background: #e3f2fd;
+        padding: 1rem;
+        margin-bottom: 1rem;
+
+        strong {
+            color: #1565c0;
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        ul {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        li {
+            background: #f7fafd;
+            margin-bottom: 0.3rem;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.98rem;
+        }
+    }
+}
+
+.budget-columns {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.left-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    gap: 2rem;
+}
+
+.budget-columns app-budget-summary {
+    flex: 1 1 0;
+}
+
+.budget-columns .chart-card {
+    flex: 1 1 0;
+}
+
+.expense-name {
+    flex: 1;
+    color: #333;
+}
+
+.expense-value {
+    color: #388e3c;
+    font-weight: 500;
+    margin-left: 1.2rem;
+}
+
+.expense-percent {
+    color: #888;
+    font-size: 0.95em;
+    margin-left: 0.7rem;
+}
+
+.empty-msg {
+    color: #bdbdbd;
+    font-style: italic;
+    margin: 0.7rem 0 0 0.2rem;
+}
+
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 4rem;
+    color: #b71c1c;
+
+    h2 {
+        margin-top: 0.5rem;
+        font-weight: 500;
+        font-size: 1.3rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .budget-header .budget-meta {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .budget-columns {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .budget-columns .chart-card {
+        margin-bottom: 0;
+    }
+}
+
+

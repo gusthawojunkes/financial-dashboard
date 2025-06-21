@@ -1,0 +1,59 @@
+.card.summary-card.budget-summary-card {
+    margin-bottom: 2rem;
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px #0001;
+    padding: 1.5rem 1.5rem 1rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.card.summary-card.budget-summary-card input[type="number"]#salary {
+    max-width: 100%;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+    display: block;
+}
+
+.summary-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+}
+
+.budget-summary-values {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.budget-summary-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 110px;
+}
+
+.budget-summary-label {
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin-bottom: 0.2rem;
+}
+
+.budget-summary-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #374151;
+}
+
+.budget-summary-value.positive {
+    color: #22c55e;
+}
+
+.budget-summary-value.negative {
+    color: #dc2626;
+}
