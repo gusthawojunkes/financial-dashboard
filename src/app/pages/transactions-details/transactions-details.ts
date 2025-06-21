@@ -7,6 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 import Chart from 'chart.js/auto';
 import DateHelper from '../../helper/date.helper';
+import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
 
 @Component({
     selector: 'app-transactions-details',
@@ -14,7 +15,8 @@ import DateHelper from '../../helper/date.helper';
     imports: [
         CommonModule,
         FormsModule,
-        TransactionsTableComponent
+        TransactionsTableComponent,
+        RevenueSummaryComponent
     ],
     styleUrls: ['./transactions-details.scss']
 })

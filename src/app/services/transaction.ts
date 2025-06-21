@@ -72,4 +72,19 @@ export class TransactionService {
         return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`);
     }
 
+    calculateSummary(transactions: Transaction[]): { revenue: number, expenses: number, balance: number } {
+        const revenue = transactions
+            .filter(t => t.value > 0)
+            .reduce((sum, t) => sum + (this.convertToBRL(t.value, t.currency) || t.value), 0);
+        const expenses = transactions
+            .filter(t => t.value < 0)
+            .reduce((sum, t) => sum + (this.convertToBRL(t.value, t.currency) || t.value), 0);
+
+        return {
+            revenue: revenue,
+            expenses: Math.abs(expenses),
+            balance: revenue + expenses
+        };
+    }
+
 }

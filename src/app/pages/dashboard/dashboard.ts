@@ -17,11 +17,12 @@ import {TransactionsTableComponent} from '../../components/transactions-table/tr
 import {Router} from '@angular/router';
 import DateHelper from '../../helper/date.helper';
 import Helper from '../../helper/helper';
+import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [CommonModule, CurrencyPipe, FormsModule, TransactionsTableComponent],
+    imports: [CommonModule, CurrencyPipe, FormsModule, TransactionsTableComponent, RevenueSummaryComponent],
     templateUrl: './dashboard.html',
     styleUrls: ['./dashboard.scss']
 })
@@ -39,7 +40,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     private colors = Helper.categoryColors;
 
     transactions: Transaction[] = [];
-    summary = {revenue: 0, expenses: 0, balance: 0};
     chartTitle = 'Despesas por Categoria';
     isDetailView = false;
     selectedView: 'categoria' | 'banco' = 'categoria';
@@ -86,12 +86,11 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     async ngOnInit(): Promise<void> {
         setTimeout(() => {
             this.createChartByView();
-        }, 500); // workaround for initial chart rendering issue
+        }, 500);
         await this.transactionService.loadTransactions();
         this.transactionsSubscription = this.transactionService.currentTransactions.subscribe(transactions => {
             this.transactions = transactions;
             if (transactions.length > 0) {
-                this.calculateSummary();
                 this.updateTopExpenseCategories();
                 this.createChartByView();
                 this.updateAvailableYearsAndMonths();
@@ -115,21 +114,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
-    }
-
-    calculateSummary(): void {
-        const revenue = this.transactions
-            .filter(t => t.value > 0)
-            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
-        const expenses = this.transactions
-            .filter(t => t.value < 0)
-            .reduce((sum, t) => sum + (this.transactionService.convertToBRL(t.value, t.currency) || t.value), 0);
-
-        this.summary = {
-            revenue: revenue,
-            expenses: Math.abs(expenses),
-            balance: revenue + expenses
-        };
     }
 
     private updateTopExpenseCategories(): void {

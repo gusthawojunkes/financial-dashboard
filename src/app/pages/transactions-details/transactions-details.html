@@ -1,8 +1,10 @@
 <div class="container">
     <h2>Transações {{ monthNamePerNumber[month].toLowerCase() }} de {{ year }}</h2>
+    <div style="margin-bottom: 2rem">
+        <app-revenue-summary [transactions]="transactions"></app-revenue-summary>
+    </div>
+
     <div class="button-group">
-        <button (click)="setChartType('line')" [disabled]="chartType === 'line'">Gráfico de Linha</button>
-        <button (click)="setChartType('bar')" [disabled]="chartType === 'bar'">Gráfico de Barras</button>
         <label>
             <input type="checkbox" [(ngModel)]="showAllDays" (change)="renderChart()"/>
             Mostrar todos os dias do mês

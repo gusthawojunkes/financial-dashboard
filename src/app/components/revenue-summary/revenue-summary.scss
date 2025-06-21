@@ -1,0 +1,66 @@
+/* Cards de Resumo */
+.summary-cards {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+    .summary-cards {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.summary-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    padding: 0.75rem;
+
+    svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        stroke: currentColor;
+    }
+
+    &.revenue-icon {
+        background-color: #dcfce7;
+        color: #16a34a;
+    }
+
+    &.expenses-icon {
+        background-color: #fee2e2;
+        color: #dc2626;
+    }
+
+    &.balance-icon {
+        background-color: #dbeafe;
+        color: #2563eb;
+    }
+}
+
+.summary-title {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.summary-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.positive {
+    color: #16a34a;
+}
+
+.negative {
+    color: #dc2626;
+}
