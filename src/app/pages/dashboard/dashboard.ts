@@ -170,7 +170,12 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         const colors = this.generateColors(labels.length);
         this.categoryColors = {};
         labels.forEach((cat, idx) => {
-            this.categoryColors[cat] = colors[idx];
+            if (cat.toLowerCase() === 'pix') {
+                this.categoryColors[cat] = Helper.pixColor;
+            } else {
+                this.categoryColors[cat] = colors[idx];
+            }
+            colors[idx] = this.categoryColors[cat];
         });
 
         this.drawChart('pie', {
@@ -233,13 +238,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
         });
         const data = Object.values(bankTotals)
-        const bankColors: { [bank: string]: string } = {
-            'nubank': '#8A05BE',
-            'wise': '#9FE870'
-        };
+
         const backgroundColor = labels.map(label => {
             const key = label.toLowerCase();
-            return bankColors[key] || '#BDBDBD';
+            return Helper.getBankMainColor(key) || '#BDBDBD';
         });
         this.chartInstance = new Chart(ctx, {
             type: 'doughnut',
@@ -354,7 +356,3 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         return '/assets/icons/tag.svg'; // Default icon
     }
 }
-
-
-
-

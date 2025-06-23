@@ -3,6 +3,12 @@ import {Bank, BRADESCO, C6_BANK, CAIXA, ITAU, NUBANK, WISE} from '../models/bank
 export default class Helper {
     public static pixColor = '#77B6A8';
     public static categoryColors: string[] = ['#EF4444', '#8B5CF6', '#22C55E', '#F59E42', '#FACC15', '#0EA5E9', '#14B8A6', '#E11D48', '#A3E635', '#F472B6', '#F97316', '#EAB308', '#84CC16', '#6366F1', '#A855F7', '#D946EF'];
+    public static mainColorByBank: { [bank: string]: string } = {
+        'nubank': '#8A05BE',
+        'wise': '#9FE870',
+        'bradesco': '#CC092F',
+    };
+
 
     public static banks: Bank[] = [NUBANK, C6_BANK, ITAU, CAIXA, WISE, BRADESCO];
 
@@ -25,4 +31,8 @@ export default class Helper {
         }
     }
 
+
+    public static getBankMainColor(institution: string) {
+        return this.mainColorByBank[institution.toLowerCase()];
+    }
 }
