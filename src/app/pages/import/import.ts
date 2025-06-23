@@ -8,6 +8,7 @@ import {SafeHtmlPipe} from '../../safe-html.pipe';
 import {LocalStorageService} from '../../services/local-storage';
 import {TransactionService} from '../../services/transaction';
 import {Bank} from '../../models/bank.model';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-import',
@@ -29,28 +30,7 @@ export class ImportComponent implements OnInit {
     invoiceType: string = 'CREDIT_INVOICE';
 
     isDropdownOpen = false;
-    banks: Bank[] = [
-        {
-            name: 'Nubank',
-            icon: '<img src="/assets/icons/banks/nubank-logo-2021.svg" alt="Nubank" width="40" height="40">'
-        },
-        {
-            name: 'C6 Bank',
-            icon: '<img src="/assets/icons/banks/c6-bank-logo-mini.jpeg" alt="C6 Bank" width="32" height="32">'
-        },
-        {
-            name: 'Itaú',
-            icon: '<img src="/assets/icons/banks/itau-logo-2023.svg" alt="Itaú" width="40" height="40">'
-        },
-        {
-            name: 'Caixa',
-            icon: '<img src="/assets/icons/banks/caixa-logo-2023.svg" alt="Caixa" width="40" height="40">'
-        },
-        {
-            name: 'Wise',
-            icon: '<img src="/assets/icons/banks/wise-logo.png" alt="Wise" width="40" height="40">'
-        }
-    ];
+    banks: Bank[] = Helper.banks;
     selectedBank: Bank = this.banks[0];
 
     step1Done = false;
