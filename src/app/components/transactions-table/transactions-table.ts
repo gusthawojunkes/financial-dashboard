@@ -3,6 +3,7 @@ import {Transaction} from '../../models/transaction.model';
 import {TransactionService} from '../../services/transaction';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import Helper from '../../helper/helper';
 
 @Component({
     selector: 'app-transactions-table',
@@ -78,25 +79,7 @@ export class TransactionsTableComponent implements OnInit, OnChanges {
 
 
     getBankIcon(institution: string): string {
-        switch (institution?.toLowerCase()) {
-            case 'nubank':
-                return '/assets/icons/banks/nubank-logo-2021.svg';
-            case 'c6 bank':
-            case 'c6':
-            case 'c6bank':
-            case 'c6_bank':
-                return '/assets/icons/banks/c6-bank-logo-mini.jpeg';
-            case 'itau':
-            case 'itaú':
-                return '/assets/icons/banks/itau-logo-2023.svg';
-            case 'caixa':
-            case 'caixa econômica':
-                return '/assets/icons/banks/caixa-logo-2023.svg';
-            case 'wise':
-                return '/assets/icons/banks/wise-logo-mini.png';
-            default:
-                return '';
-        }
+        return Helper.getBankIcon(institution);
     }
 
     getCurrencyFlag(currency: string): string {
