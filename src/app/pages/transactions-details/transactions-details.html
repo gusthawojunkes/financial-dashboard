@@ -4,6 +4,20 @@
         <app-revenue-summary [transactions]="transactions"></app-revenue-summary>
     </div>
 
+    <div>
+        <h2 style="display: flex; align-items: center; justify-content: flex-start; cursor: pointer;"
+            (click)="toggleCategorieSummary()">
+            <span style="font-size: 1.5rem; user-select: none;">
+                {{ isCategorieSummaryOpen ? '▼' : '►' }}
+            </span>
+            &nbsp;
+            <span>Resumo de saídas por categoria</span>
+        </h2>
+        <div [class.accordion-content]="true" [class.open]="isCategorieSummaryOpen">
+            <app-categorie-summary [transactions]="transactions"></app-categorie-summary>
+        </div>
+    </div>
+
     <div class="button-group">
         <label>
             <input type="checkbox" [(ngModel)]="showAllDays" (change)="renderChart()"/>

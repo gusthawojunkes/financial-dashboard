@@ -8,6 +8,7 @@ import {TransactionsTableComponent} from '../../components/transactions-table/tr
 import Chart from 'chart.js/auto';
 import DateHelper from '../../helper/date.helper';
 import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
+import {CategorieSummaryComponent} from '../../components/categorie-summary/categorie-summary';
 
 @Component({
     selector: 'app-transactions-details',
@@ -16,7 +17,8 @@ import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-
         CommonModule,
         FormsModule,
         TransactionsTableComponent,
-        RevenueSummaryComponent
+        RevenueSummaryComponent,
+        CategorieSummaryComponent
     ],
     styleUrls: ['./transactions-details.scss']
 })
@@ -29,6 +31,7 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
     chartType: 'line' | 'bar' = 'line';
     showAllDays: boolean = true;
     monthNamePerNumber = DateHelper.monthNamePerNumber;
+    isCategorieSummaryOpen: boolean = false;
 
     constructor(
         private route: ActivatedRoute,
@@ -181,5 +184,9 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
 
     isPreviousMonthInPast(): boolean {
         return this.year <= 1970 && this.month === 1;
+    }
+
+    toggleCategorieSummary() {
+        this.isCategorieSummaryOpen = !this.isCategorieSummaryOpen;
     }
 }

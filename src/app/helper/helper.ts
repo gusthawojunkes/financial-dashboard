@@ -9,7 +9,6 @@ export default class Helper {
         'bradesco': '#CC092F',
     };
 
-
     public static banks: Bank[] = [NUBANK, C6_BANK, ITAU, CAIXA, WISE, BRADESCO];
 
     public static getBankIcon(institution: string): string {

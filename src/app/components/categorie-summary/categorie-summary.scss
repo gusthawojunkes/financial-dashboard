@@ -1,0 +1,88 @@
+.categorie-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.2rem;
+    margin: 2rem 0;
+}
+
+.categorie-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+    padding: 1.2rem 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    transition: box-shadow 0.2s;
+}
+
+.categorie-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.13);
+}
+
+.categorie-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.7rem;
+    color: #2d3748;
+    word-break: break-word;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.categorie-card-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 0.3rem;
+}
+
+.categorie-value-row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    font-size: 1rem;
+    margin-bottom: 0.2rem;
+}
+
+.categorie-value-label {
+    color: #718096;
+    font-size: 0.97rem;
+}
+
+.categorie-value-received {
+    color: #38a169;
+    font-weight: 500;
+}
+
+.categorie-value-spent {
+
+    font-weight: 500;
+
+    .categorie-spent .value {
+        color: #e53e3e;
+        font-weight: 700;
+    }
+
+    background: #edf2f7;
+    width: 100%;
+    height: 1px;
+    background: #e2e8f0;
+    margin: 0.7rem 0 0.5rem 0;
+    border: none;
+}
+
+@media (max-width: 600px) {
+    .categorie-summary-cards {
+        grid-template-columns: 1fr;
+        gap: 0.7rem;
+    }
+    .categorie-card {
+
+
+        padding: 1rem 0.7rem 0.8rem 0.7rem;
+    }
+}
