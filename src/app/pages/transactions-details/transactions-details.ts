@@ -8,7 +8,7 @@ import {TransactionsTableComponent} from '../../components/transactions-table/tr
 import Chart from 'chart.js/auto';
 import DateHelper from '../../helper/date.helper';
 import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
-import {CategorieSummaryComponent} from '../../components/categorie-summary/categorie-summary';
+import {CategorySummaryComponent} from '../../components/categorie-summary/category-summary';
 
 @Component({
     selector: 'app-transactions-details',
@@ -18,7 +18,7 @@ import {CategorieSummaryComponent} from '../../components/categorie-summary/cate
         FormsModule,
         TransactionsTableComponent,
         RevenueSummaryComponent,
-        CategorieSummaryComponent
+        CategorySummaryComponent
     ],
     styleUrls: ['./transactions-details.scss']
 })

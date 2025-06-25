@@ -1,19 +1,20 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {Transaction} from '../../models/transaction.model';
-import {DecimalPipe} from '@angular/common';
+import {NgOptimizedImage} from '@angular/common';
 import {CommonModule} from '@angular/common';
+import CategoryHelper from '../../helper/category.helper';
 
 @Component({
     selector: 'app-categorie-summary',
     standalone: true,
     imports: [
         CommonModule,
-        DecimalPipe
+        NgOptimizedImage
     ],
-    templateUrl: './categorie-summary.html',
-    styleUrl: './categorie-summary.scss'
+    templateUrl: './category-summary.html',
+    styleUrl: './category-summary.scss'
 })
-export class CategorieSummaryComponent implements OnChanges {
+export class CategorySummaryComponent implements OnChanges {
     @Input() transactions: Transaction[] = [];
     summaryRows: { category: string; received: number; spent: number }[] = [];
 
@@ -35,7 +36,14 @@ export class CategorieSummaryComponent implements OnChanges {
             category: cat,
             received: categoryMap[cat].received,
             spent: categoryMap[cat].spent
-        }));
+        })).sort((a, b) => b.spent - a.spent);
+    }
+
+    getCategoryIcon(category: string): string {
+        return CategoryHelper.getCategoryIcon(category);
+    }
+
+    getCategoryColor(category: string): string {
+        return CategoryHelper.getCategoryColor(category);
     }
 }
-

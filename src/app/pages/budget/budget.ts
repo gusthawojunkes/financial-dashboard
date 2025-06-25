@@ -11,14 +11,14 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import Chart from 'chart.js/auto';
 import {Expense} from '../../models/expense.model';
-import {Category} from '../../models/categorie.model';
+import {BudgetCategory} from '../../models/budget-category.model';
 import {Budget} from '../../models/budget.model';
 import {BudgetService} from '../../services/budget';
 import {LocalStorageService} from '../../services/local-storage';
 import {Router} from '@angular/router';
 import {BudgetSummary} from '../../components/budget-summary/budget-summary';
 import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
-import Helper from '../../helper/helper';
+import CategorieHelper from '../../helper/category.helper';
 
 @Component({
     selector: 'app-budget',
@@ -34,9 +34,9 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
     selectedCategory: string | null = null;
 
     expenses: Expense[] = [];
-    categories: Category[] = [];
+    categories: BudgetCategory[] = [];
     selectedExpenses: Set<number> = new Set();
-    private readonly expenseColors = Helper.categoryColors;
+    private readonly expenseColors = CategorieHelper.categoryColors;
     private readonly remainingColor = '#2563eb';
     newCategoryName: string = '';
     showCategoryInput: boolean = false;
@@ -391,20 +391,5 @@ export class BudgetComponent implements AfterViewInit, AfterViewChecked, OnInit 
 
     getSavedBudgets(): Budget[] {
         return this.budgetService.getSavedBudgets();
-    }
-
-    /**
-     * Carrega um budget salvo pelo nome.
-     */
-    loadBudgetByName(id: string) {
-        const budget = this.budgetService.findBudgetById(id);
-        if (!budget) {
-            alert('Budget não encontrado.');
-            return;
-        }
-        // this.salary = budget.salary;
-        // this.expenses = budget.expenses;
-        // this.categories = budget.categories;
-        // this.chartShouldRender = true;
     }
 }

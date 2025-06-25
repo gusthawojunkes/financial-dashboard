@@ -1,11 +1,11 @@
 import {Expense} from './expense.model';
-import {Category} from './categorie.model';
+import {BudgetCategory} from './budget-category.model';
 
 export interface Budget {
     id: string;
     name: string;
     salary: number;
     expenses: Expense[];
-    categories: Category[];
+    categories: BudgetCategory[];
     date: Date;
 }

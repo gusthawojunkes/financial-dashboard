@@ -8,7 +8,7 @@ import {SafeHtmlPipe} from '../../safe-html.pipe';
 import {LocalStorageService} from '../../services/local-storage';
 import {TransactionService} from '../../services/transaction';
 import {Bank} from '../../models/bank.model';
-import Helper from '../../helper/helper';
+import BankHelper from '../../helper/bank.helper';
 
 @Component({
     selector: 'app-import',
@@ -30,7 +30,7 @@ export class ImportComponent implements OnInit {
     invoiceType: string = 'CREDIT_INVOICE';
 
     isDropdownOpen = false;
-    banks: Bank[] = Helper.banks;
+    banks: Bank[] = BankHelper.banks;
     selectedBank: Bank = this.banks[0];
 
     step1Done = false;

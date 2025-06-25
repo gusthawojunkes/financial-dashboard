@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from '@angular/router';
 import {BudgetService} from '../../services/budget';
-import {Budget} from '../../models/budget.model';
 import {CurrencyPipe, DatePipe, DecimalPipe} from '@angular/common';
 import {CommonModule} from '@angular/common';
 import {BudgetSummary} from '../../components/budget-summary/budget-summary';
 import {BudgetDistributionChart} from '../../components/budget-distribution-chart/budget-distribution-chart';
+import {Budget} from '../../models/budget.model';
 
 @Component({
     selector: 'app-budget-details',

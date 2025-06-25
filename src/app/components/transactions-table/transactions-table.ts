@@ -3,7 +3,7 @@ import {Transaction} from '../../models/transaction.model';
 import {TransactionService} from '../../services/transaction';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import Helper from '../../helper/helper';
+import BankHelper from '../../helper/bank.helper';
 
 @Component({
     selector: 'app-transactions-table',
@@ -79,7 +79,7 @@ export class TransactionsTableComponent implements OnInit, OnChanges {
 
 
     getBankIcon(institution: string): string {
-        return Helper.getBankIcon(institution);
+        return BankHelper.getBankIcon(institution);
     }
 
     getCurrencyFlag(currency: string): string {

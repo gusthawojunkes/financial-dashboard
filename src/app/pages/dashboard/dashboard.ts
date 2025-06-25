@@ -1,12 +1,4 @@
-import {
-    Component,
-    OnInit,
-    OnDestroy,
-    ChangeDetectorRef,
-    AfterViewInit,
-    ElementRef,
-    ViewChild,
-} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild,} from '@angular/core';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {Subscription} from 'rxjs';
 import Chart from 'chart.js/auto';
@@ -16,8 +8,9 @@ import {Transaction} from '../../models/transaction.model';
 import {TransactionsTableComponent} from '../../components/transactions-table/transactions-table';
 import {Router} from '@angular/router';
 import DateHelper from '../../helper/date.helper';
-import Helper from '../../helper/helper';
+import BankHelper from '../../helper/bank.helper';
 import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
+import CategorieHelper from '../../helper/category.helper';
 
 @Component({
     selector: 'app-dashboard',
@@ -37,7 +30,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public selectedYear: number | null = null;
     public selectedMonth: number | null = null;
 
-    private colors = Helper.categoryColors;
+    private colors = CategorieHelper.categoryColors;
 
     transactions: Transaction[] = [];
     chartTitle = 'Despesas por Categoria';
@@ -171,7 +164,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         this.categoryColors = {};
         labels.forEach((cat, idx) => {
             if (cat.toLowerCase() === 'pix') {
-                this.categoryColors[cat] = Helper.pixColor;
+                this.categoryColors[cat] = CategorieHelper.pixColor;
             } else {
                 this.categoryColors[cat] = colors[idx];
             }
@@ -188,7 +181,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
             }]
         }, (_, elements) => {
             if (elements && elements.length > 0) {
-                const clickedCategory = labels[elements[0].index];
+                const clickedCategory = labels[elements[0].index]
                 this.createDetailsChart(clickedCategory);
             }
         });
@@ -241,7 +234,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
         const backgroundColor = labels.map(label => {
             const key = label.toLowerCase();
-            return Helper.getBankMainColor(key) || '#BDBDBD';
+            return BankHelper.getBankMainColor(key) || '#BDBDBD';
         });
         this.chartInstance = new Chart(ctx, {
             type: 'doughnut',
@@ -346,13 +339,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     getCategoryIcon(category: string | undefined): string {
-        if (!category) return '/assets/icons/tag.svg';
-        const lowerCategory = category.toLowerCase();
-        if (lowerCategory.includes('alimentação')) {
-            return '/assets/icons/shopping-cart.svg';
-        } else if (lowerCategory.includes('pix')) {
-            return '/assets/icons/pix.svg';
-        }
-        return '/assets/icons/tag.svg'; // Default icon
+        return CategorieHelper.getCategoryIcon(category);
     }
 }

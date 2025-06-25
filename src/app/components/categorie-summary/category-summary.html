@@ -1,0 +1,17 @@
+<div class="categorie-summary-cards">
+    <div class="categorie-card" *ngFor="let row of summaryRows"
+         [ngStyle]="{'background-color': getCategoryColor(row.category)}">
+        <div class="categorie-title">
+            <img [ngSrc]="getCategoryIcon(row.category)" [alt]="row.category" width="24" height="24">
+            {{ row.category }}
+        </div>
+        <div class="categorie-values">
+            <!--            <div class="categorie-received">-->
+            <!--                <span class="value received">R$ {{ row.received | number:'1.2-2' }}</span>-->
+            <!--            </div>-->
+            <div class="categorie-spent">
+                <span class="value spent">{{ row.spent | currency:'BRL' }}</span>
+            </div>
+        </div>
+    </div>
+</div>
