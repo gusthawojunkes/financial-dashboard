@@ -27,7 +27,8 @@ export class TransactionService {
     }
 
     getAll(): Observable<Transaction[]> {
-        return this.http.get<Transaction[]>(`${this.apiUrl}`);
+        const headers = {'userId': '1'};
+        return this.http.get<Transaction[]>(`${this.apiUrl}`, {headers});
     }
 
     getAllFromLocal(): Observable<Transaction[]> {
@@ -69,7 +70,8 @@ export class TransactionService {
     }
 
     getTransactionsByMonth(year: number, month: number): Observable<Transaction[]> {
-        return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`);
+        const headers = {'userId': '1'};
+        return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`, {headers});
     }
 
     calculateSummary(transactions: Transaction[]): { revenue: number, expenses: number, balance: number } {
