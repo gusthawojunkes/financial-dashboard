@@ -6,11 +6,9 @@
             {{ row.category }}
         </div>
         <div class="categorie-values">
-            <!--            <div class="categorie-received">-->
-            <!--                <span class="value received">R$ {{ row.received | number:'1.2-2' }}</span>-->
-            <!--            </div>-->
             <div class="categorie-spent">
                 <span class="value spent">{{ row.spent | currency:'BRL' }}</span>
+                <span class="percent-spent">&nbsp;({{ row.percentSpent | number:'1.0-2' }}%)</span>
             </div>
         </div>
     </div>

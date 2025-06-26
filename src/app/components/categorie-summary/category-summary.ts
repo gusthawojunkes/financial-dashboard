@@ -16,7 +16,7 @@ import CategoryHelper from '../../helper/category.helper';
 })
 export class CategorySummaryComponent implements OnChanges {
     @Input() transactions: Transaction[] = [];
-    summaryRows: { category: string; received: number; spent: number }[] = [];
+    summaryRows: { category: string; received: number; spent: number; percentSpent: number }[] = [];
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['transactions']) {
@@ -26,16 +26,21 @@ export class CategorySummaryComponent implements OnChanges {
 
     calculateSummary() {
         const categoryMap: { [key: string]: { received: number; spent: number } } = {};
+        let totalSpent = 0;
         for (const t of this.transactions) {
             const cat = t.category || 'Sem categoria';
             if (!categoryMap[cat]) categoryMap[cat] = {received: 0, spent: 0};
             if (t.value > 0) categoryMap[cat].received += t.value;
-            else categoryMap[cat].spent += Math.abs(t.value);
+            else {
+                categoryMap[cat].spent += Math.abs(t.value);
+                totalSpent += Math.abs(t.value);
+            }
         }
         this.summaryRows = Object.keys(categoryMap).map(cat => ({
             category: cat,
             received: categoryMap[cat].received,
-            spent: categoryMap[cat].spent
+            spent: categoryMap[cat].spent,
+            percentSpent: totalSpent > 0 ? (categoryMap[cat].spent / totalSpent) * 100 : 0
         })).sort((a, b) => b.spent - a.spent);
     }
 

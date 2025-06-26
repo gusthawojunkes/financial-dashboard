@@ -4,6 +4,7 @@ import {TransactionService} from '../../services/transaction';
 import {CommonModule, CurrencyPipe} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import BankHelper from '../../helper/bank.helper';
+import CategoryHelper from '../../helper/category.helper';
 
 @Component({
     selector: 'app-transactions-table',
@@ -101,8 +102,7 @@ export class TransactionsTableComponent implements OnInit, OnChanges {
     }
 
     getCategoryColor(category: string | undefined): string | null {
-        if (!category) return null;
-        return this.categoryColors[category] || null;
+        return CategoryHelper.getCategoryColor(category);
     }
 
     private updateCategoryColors(): void {

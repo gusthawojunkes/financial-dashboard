@@ -10,7 +10,7 @@ import {Router} from '@angular/router';
 import DateHelper from '../../helper/date.helper';
 import BankHelper from '../../helper/bank.helper';
 import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
-import CategorieHelper from '../../helper/category.helper';
+import CategoryHelper from '../../helper/category.helper';
 
 @Component({
     selector: 'app-dashboard',
@@ -29,8 +29,6 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     public availableMonthsByYear: { [year: number]: number[] } = {};
     public selectedYear: number | null = null;
     public selectedMonth: number | null = null;
-
-    private colors = CategorieHelper.categoryColors;
 
     transactions: Transaction[] = [];
     chartTitle = 'Despesas por Categoria';
@@ -160,14 +158,10 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
 
         const labels = Object.keys(spendingByCategory);
         const data = Object.values(spendingByCategory);
-        const colors = this.generateColors(labels.length);
+        const colors: string[] = [];
         this.categoryColors = {};
         labels.forEach((cat, idx) => {
-            if (cat.toLowerCase() === 'pix') {
-                this.categoryColors[cat] = CategorieHelper.pixColor;
-            } else {
-                this.categoryColors[cat] = colors[idx];
-            }
+            this.categoryColors[cat] = CategoryHelper.getCategoryColor(cat);
             colors[idx] = this.categoryColors[cat];
         });
 
@@ -334,11 +328,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         });
     }
 
-    private generateColors(numColors: number): string[] {
-        return Array.from({length: numColors}, (_, i) => this.colors[i % this.colors.length]);
-    }
-
     getCategoryIcon(category: string | undefined): string {
-        return CategorieHelper.getCategoryIcon(category);
+        return CategoryHelper.getCategoryIcon(category);
     }
 }

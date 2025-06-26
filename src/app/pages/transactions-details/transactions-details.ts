@@ -144,11 +144,6 @@ export class TransactionsDetailsComponent implements OnInit, AfterViewInit, OnCh
         });
     }
 
-    setChartType(type: 'line' | 'bar') {
-        this.chartType = type;
-        this.renderChart();
-    }
-
     goToNextMonth() {
         if (this.month === 12) {
             this.month = 1;
