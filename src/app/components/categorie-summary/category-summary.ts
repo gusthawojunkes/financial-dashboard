@@ -3,13 +3,15 @@ import {Transaction} from '../../models/transaction.model';
 import {NgOptimizedImage} from '@angular/common';
 import {CommonModule} from '@angular/common';
 import CategoryHelper from '../../helper/category.helper';
+import {TransactionsTableComponent} from '../transactions-table/transactions-table';
 
 @Component({
     selector: 'app-categorie-summary',
     standalone: true,
     imports: [
         CommonModule,
-        NgOptimizedImage
+        NgOptimizedImage,
+        TransactionsTableComponent
     ],
     templateUrl: './category-summary.html',
     styleUrl: './category-summary.scss'
@@ -17,6 +19,8 @@ import CategoryHelper from '../../helper/category.helper';
 export class CategorySummaryComponent implements OnChanges {
     @Input() transactions: Transaction[] = [];
     summaryRows: { category: string; received: number; spent: number; percentSpent: number }[] = [];
+    showModal = false;
+    selectedCategory: string = "";
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['transactions']) {
@@ -50,5 +54,19 @@ export class CategorySummaryComponent implements OnChanges {
 
     getCategoryColor(category: string): string {
         return CategoryHelper.getCategoryColor(category);
+    }
+
+    openCategoryModal(category: string) {
+        this.selectedCategory = category;
+        this.showModal = true;
+    }
+
+    closeCategoryModal() {
+        this.showModal = false;
+        this.selectedCategory = "";
+    }
+
+    getTransactionsByCategory(category: string) {
+        return this.transactions.filter(t => t.category === category);
     }
 }

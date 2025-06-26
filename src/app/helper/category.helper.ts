@@ -95,7 +95,7 @@ export default class CategoryHelper {
         },
         'telefonia': {
             name: 'Telefonia',
-            icon: '/assets/icons/heart.svg',
+            icon: '/assets/icons/phone.svg',
             color: '#D946EF'
         },
     };

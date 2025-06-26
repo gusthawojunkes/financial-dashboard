@@ -1,6 +1,8 @@
 <div class="categorie-summary-cards">
-    <div class="categorie-card" *ngFor="let row of summaryRows"
-         [ngStyle]="{'background-color': getCategoryColor(row.category)}">
+    <div class="categorie-card"
+         *ngFor="let row of summaryRows"
+         [ngStyle]="{'background-color': getCategoryColor(row.category)}"
+         (click)="openCategoryModal(row.category)">
         <div class="categorie-title">
             <img [ngSrc]="getCategoryIcon(row.category)" [alt]="row.category" width="24" height="24">
             {{ row.category }}
@@ -11,5 +13,17 @@
                 <span class="percent-spent">&nbsp;({{ row.percentSpent | number:'1.0-2' }}%)</span>
             </div>
         </div>
+    </div>
+</div>
+
+<div class="category-modal-overlay" *ngIf="showModal" (click)="closeCategoryModal()">
+    <div class="category-modal" (click)="$event.stopPropagation()">
+        <div class="category-modal-header">
+            <h2>Transações da categoria: {{ selectedCategory }}</h2>
+            <button class="close-btn" (click)="closeCategoryModal()" aria-label="Fechar">
+                <img src="assets/icons/close.svg" alt="Fechar" width="28" height="28"/>
+            </button>
+        </div>
+        <app-transactions-table [transactions]="getTransactionsByCategory(selectedCategory)"/>
     </div>
 </div>

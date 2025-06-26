@@ -75,6 +75,53 @@
     border: none;
 }
 
+.category-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.category-modal {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    min-width: 87%;
+    max-width: 90vw;
+}
+
+.category-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.25rem;
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    color: #888;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #d32f2f;
+}
+
+.material-icons {
+    font-size: 2rem;
+}
+
 @media (max-width: 600px) {
     .categorie-summary-cards {
         grid-template-columns: 1fr;
