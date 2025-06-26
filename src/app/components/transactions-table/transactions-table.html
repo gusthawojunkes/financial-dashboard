@@ -4,9 +4,9 @@
             <thead>
             <tr>
                 <th>Descrição</th>
-                <th>Data</th>
-                <th>Categoria</th>
-                <th>Moeda</th>
+                <th class="text-center">Data</th>
+                <th class="text-center">Categoria</th>
+                <th class="text-center">Moeda</th>
                 <th class="text-right">Valor</th>
             </tr>
             </thead>
@@ -18,14 +18,14 @@
                          width="24" height="24" style="vertical-align:middle;margin-right:6px;">
                     {{ tx.description }}
                 </td>
-                <td>{{ tx.transactionTime }}</td>
-                <td>
-                        <span class="category-tag"
+                <td class="text-center">{{ tx.transactionTime }}</td>
+                <td class="text-center">
+                        <span class="category-tag text-center"
                               [ngStyle]="{'background-color': getCategoryColor(tx.category || '') || '#e5e7eb', 'color': '#fff'}">
                             {{ tx.category || 'Outros' }}
                         </span>
                 </td>
-                <td>
+                <td class="text-center">
                     <img *ngIf="tx.currency" [src]="getCurrencyFlag(tx.currency)" [alt]="tx.currency + ' flag'"
                          width="40" height="40" style="vertical-align:middle;">
                 </td>
