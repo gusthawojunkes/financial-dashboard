@@ -1,0 +1,72 @@
+<div class="objectives-container">
+    <div class="card">
+        <h2>Adicionar objetivo</h2>
+        <form class="objective-form" (ngSubmit)="addObjective()">
+            <input type="text" [(ngModel)]="newObjective.name" name="name" placeholder="Nome do objetivo" required>
+            <input type="number" [(ngModel)]="newObjective.target" name="target" placeholder="Total do objetivo" min="1"
+                   required>
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+
+    <div class="objectives-list" style="margin-top: 2rem">
+        <div class="objective-card" *ngFor="let objective of objectives">
+            <div class="objective-header">
+                <img [ngSrc]="getObjectiveIcon(objective)" height="24" width="24"/>
+                <h3>{{ objective.name }} ({{ objective.target | currency:'BRL' }})</h3>
+                <button type="button" class="delete-btn" (click)="deleteObjective(objective)"
+                        aria-label="Excluir objetivo">&times;
+                </button>
+            </div>
+            <p>Atual: {{ objective.current | currency:'BRL' }} ({{ getPercentComplete(objective) }}%)</p>
+            <div class="progress-bar">
+                <div class="progress" [style.width.%]="(objective.current / objective.target) * 100"></div>
+            </div>
+            <small *ngIf="objective.missingTime" style="margin-bottom: 1.3rem">
+                Faltam
+                <b>
+                    <ng-container *ngIf="objective.missingTime.years">
+                        {{ objective.missingTime.years }} {{ objective.missingTime.years === 1 ? 'ano' : 'anos' }}
+                    </ng-container>
+                    <ng-container *ngIf="objective.missingTime.months">
+                        {{ objective.missingTime.months }} {{ objective.missingTime.months === 1 ? 'mês' : 'meses' }}
+                    </ng-container>
+                    <ng-container *ngIf="objective.missingTime.days">
+                        {{ objective.missingTime.days }} {{ objective.missingTime.days === 1 ? 'dia' : 'dias' }}
+                    </ng-container>
+                </b>
+                para alcançar o objetivo.
+            </small>
+            <small *ngIf="!objective.missingTime" style="margin-bottom: 1.3rem">
+                Informe um aporte para calcular o tempo restante.
+            </small>
+            <form (ngSubmit)="addContribution(objective)">
+                <input type="number" [(ngModel)]="objective.contribution" name="contribution{{objective.name}}"
+                       placeholder="Valor (R$)" min="1">
+                <button type="submit">Aportar</button>
+            </form>
+            <div class="simulation">
+                <input type="number" [(ngModel)]="objective.simulationAmount" name="simulationAmount{{objective.name}}"
+                       placeholder="Aporte mensal" min="1">
+                <button (click)="simulate(objective)" type="button">Simular</button>
+            </div>
+            <small *ngIf="objective.simulationResult">
+                Com um aporte mensal de <b>{{ objective.simulationAmount | currency:'BRL' }}</b> até chegar o valor de
+                <b>{{ objective.target | currency:'BRL' }}</b>, você levará
+                <b>
+                    <ng-container *ngIf="objective.simulationResult.years">
+                        {{ objective.simulationResult.years }} {{ objective.simulationResult.years === 1 ? 'ano' : 'anos' }}
+                    </ng-container>
+                    <ng-container *ngIf="objective.simulationResult.months">
+                        {{ objective.simulationResult.months }} {{ objective.simulationResult.months === 1 ? 'mês' : 'meses' }}
+                    </ng-container>
+                    <ng-container *ngIf="objective.simulationResult.days">
+                        {{ objective.simulationResult.days }} {{ objective.simulationResult.days === 1 ? 'dia.' : 'dias.' }}
+                    </ng-container>
+                </b>
+            </small>
+            <small *ngIf="!objective.simulationResult">Simule um valor de aporte mensal para calcular o tempo
+                restante.</small>
+        </div>
+    </div>
+</div>
