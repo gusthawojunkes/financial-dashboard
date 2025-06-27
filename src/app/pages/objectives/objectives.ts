@@ -66,10 +66,20 @@ export class ObjectivesComponent implements OnInit {
             return {years: 0, months: 0, days: 0};
         }
         const monthsFloat = remaining / amount;
-        const months = Math.floor(monthsFloat);
-        const years = Math.floor(months / 12);
-        const monthsLeft = months % 12;
-        const days = Math.round((monthsFloat - months) * 30);
+        let months = Math.floor(monthsFloat);
+        let years = Math.floor(months / 12);
+        let monthsLeft = months % 12;
+        let days = Math.round((monthsFloat - months) * 30);
+
+        if (days >= 30) {
+            monthsLeft += 1;
+            days = 0;
+        }
+        if (monthsLeft >= 12) {
+            years += Math.floor(monthsLeft / 12);
+            monthsLeft = monthsLeft % 12;
+        }
+
         return {years, months: monthsLeft, days: days < 0 ? 0 : days};
     }
 
@@ -90,7 +100,7 @@ export class ObjectivesComponent implements OnInit {
 
     getPercentComplete(obj: Objective): number {
         if (!obj.target || obj.target === 0) return 0;
-        return Math.min(100, Math.round((obj.current / obj.target) * 100));
+        return Math.min(100, Math.round((obj.current / obj.target) * 10000) / 100);
     }
 
     deleteObjective(objective: Objective) {
