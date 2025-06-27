@@ -11,6 +11,7 @@ import DateHelper from '../../helper/date.helper';
 import BankHelper from '../../helper/bank.helper';
 import {RevenueSummaryComponent} from '../../components/revenue-summary/revenue-summary';
 import CategoryHelper from '../../helper/category.helper';
+import {UserService} from '../../services/user';
 
 @Component({
     selector: 'app-dashboard',
@@ -41,6 +42,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
         private cdr: ChangeDetectorRef,
         private transactionService: TransactionService,
         private router: Router,
+        private userService: UserService
     ) {
     }
 
@@ -75,6 +77,7 @@ export class DashboardComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     async ngOnInit(): Promise<void> {
+        this.userService.setUserId('1');
         setTimeout(() => {
             this.createChartByView();
         }, 500);

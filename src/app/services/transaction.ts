@@ -4,6 +4,7 @@ import {LocalStorageService} from './local-storage';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {environment} from '../../environments/environment';
+import {UserService} from './user';
 
 @Injectable({
     providedIn: 'root'
@@ -14,6 +15,7 @@ export class TransactionService {
     currentTransactions = this.transactionsSource.asObservable();
 
     constructor(
+        private userService: UserService,
         private dataPersistence: LocalStorageService,
         private http: HttpClient
     ) {
@@ -27,8 +29,7 @@ export class TransactionService {
     }
 
     getAll(): Observable<Transaction[]> {
-        const headers = {'userId': '1'};
-        return this.http.get<Transaction[]>(`${this.apiUrl}`, {headers});
+        return this.http.get<Transaction[]>(`${this.apiUrl}`, {headers: this.deafultHeaders()});
     }
 
     getAllFromLocal(): Observable<Transaction[]> {
@@ -70,8 +71,7 @@ export class TransactionService {
     }
 
     getTransactionsByMonth(year: number, month: number): Observable<Transaction[]> {
-        const headers = {'userId': '1'};
-        return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`, {headers});
+        return this.http.get<Transaction[]>(`${this.apiUrl}/${year}/${month}`, {headers: this.deafultHeaders()});
     }
 
     calculateSummary(transactions: Transaction[]): { revenue: number, expenses: number, balance: number } {
@@ -87,6 +87,10 @@ export class TransactionService {
             expenses: Math.abs(expenses),
             balance: revenue + expenses
         };
+    }
+
+    deafultHeaders() {
+        return {'userId': this.userService.getUserId()};
     }
 
 }
