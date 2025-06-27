@@ -1,0 +1,181 @@
+.objectives-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.objective-card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 18px 16px;
+    min-width: 30%;
+    max-width: 30%;
+    margin-bottom: 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+        margin: 0 0 8px 0;
+    }
+
+    p {
+        margin: 4px 0;
+        color: #374151;
+    }
+
+    .progress-bar {
+        background: #e0e7ef;
+        border-radius: 6px;
+        height: 14px;
+        margin: 10px 0 16px 0;
+        overflow: hidden;
+
+        .progress {
+            background: linear-gradient(90deg, #1976d2 60%, #64b5f6 100%);
+            height: 100%;
+            transition: width 0.4s;
+        }
+    }
+
+    form {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 10px;
+
+        input[type="number"] {
+            max-width: 120px;
+        }
+    }
+
+    .simulation {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        input[type="number"] {
+            max-width: 120px;
+        }
+
+        button {
+            background: #43a047;
+        }
+
+        small {
+            margin-left: 10px;
+            color: #555;
+        }
+    }
+}
+
+.objective-card form,
+.objective-card .simulation {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    width: 100%;
+
+    input[type="number"] {
+        flex: 1 1 auto;
+        max-width: none;
+        min-width: 0;
+    }
+
+    button {
+        flex: 0 0 auto;
+        width: 100px;
+    }
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 5px 7px;
+    border: 1.2px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+    background: #f9fafb;
+    transition: border 0.2s, box-shadow 0.2s;
+
+    &:focus {
+        border-color: #1976d2;
+        outline: none;
+        box-shadow: 0 0 0 2px #1976d220;
+    }
+}
+
+button {
+    padding: 5px 11px;
+    background: #1976d2;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s;
+
+    &:hover,
+    &:focus {
+        background: #1565c0;
+        box-shadow: 0 2px 8px #1976d220;
+    }
+
+    &:disabled {
+        background: #b0bec5;
+        cursor: not-allowed;
+    }
+}
+
+.simulation button {
+    background: #43a047;
+
+    &:hover,
+    &:focus {
+        background: #388e3c;
+    }
+}
+
+.objective-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    gap: 0.5rem;
+
+    .objective-icon {
+        font-size: 1.5rem;
+        margin-right: 0.5rem;
+    }
+
+    h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        flex: 1;
+    }
+
+    .delete-btn {
+        background: transparent;
+        color: #e53935;
+        font-size: 1.5rem;
+        border: none;
+        margin: 0;
+        padding: 0 6px;
+        cursor: pointer;
+        align-self: flex-start;
+        line-height: 1;
+
+        &:hover,
+        &:focus {
+            color: #b71c1c;
+            background: #fbe9e7;
+            border-radius: 50%;
+        }
+    }
+}
+
+.value-input {
+    margin-right: 1.1rem;
+    min-width: 33.33%;
+}
