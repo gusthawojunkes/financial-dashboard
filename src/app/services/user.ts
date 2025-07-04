@@ -5,7 +5,7 @@ import {Injectable} from '@angular/core';
 })
 export class UserService {
 
-    private userId: string = '';
+    private userId: string = '1';
 
     setUserId(userId: string) {
         this.userId = userId;

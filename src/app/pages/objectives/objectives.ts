@@ -3,6 +3,7 @@ import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {LocalStorageService} from '../../services/local-storage';
 import {Objective} from '../../models/objective.model';
+import {ObjectiveService} from '../../services/objective';
 
 @Component({
     selector: 'app-objectives',
@@ -19,16 +20,29 @@ export class ObjectivesComponent implements OnInit {
     newObjective: Partial<Objective> = {name: '', target: undefined};
     private storageKey = 'objectives';
 
-    constructor(private localStorageService: LocalStorageService) {
+    constructor(private service: ObjectiveService) {
+    }
+
+    loadObjectives() {
+        this.service.getAll().subscribe((objectives) => {
+            this.objectives = objectives;
+            this.organize();
+        });
+    }
+
+    updateObjectives(objective: Objective | null) {
+        if (!objective) return;
+        this.objectives.push(objective);
+        this.saveObjectives();
+        this.organize();
     }
 
     saveObjectives() {
-        this.localStorageService.setItem<Objective[]>(this.storageKey, this.objectives);
+        this.service.saveIntoStorage(this.objectives);
     }
 
     ngOnInit() {
-        this.objectives = this.localStorageService.getItem<Objective[]>(this.storageKey, []) || [];
-        this.organize();
+        this.loadObjectives();
     }
 
     organize() {
@@ -37,7 +51,7 @@ export class ObjectivesComponent implements OnInit {
 
     addObjective() {
         if (!this.newObjective.name || !this.newObjective.target || this.newObjective.target <= 0) return;
-        const objective = {
+        const objective: Objective = {
             name: this.newObjective.name,
             target: this.newObjective.target,
             current: 0,
@@ -45,19 +59,23 @@ export class ObjectivesComponent implements OnInit {
             missingTime: undefined
         }
         this.calculateMissingTime(objective);
-        this.objectives.push(objective);
-        this.organize();
-        this.saveObjectives();
+        this.service.save(objective).subscribe((row) => {
+            this.service.saveNewObjective(row);
+            this.updateObjectives(row);
+        });
         this.newObjective = {name: '', target: 0};
     }
 
     addContribution(objective: Objective) {
         if (!objective.contribution || objective.contribution <= 0) return;
+        this.service.contribute(objective).subscribe(() => {
+            this.simulate(objective);
+        });
         objective.current += objective.contribution;
         this.calculateMissingTime(objective);
         objective.contribution = undefined;
         if (objective.current > objective.target) objective.current = objective.target;
-        this.saveObjectives();
+        //this.saveObjectives();
 
     }
 
@@ -104,8 +122,11 @@ export class ObjectivesComponent implements OnInit {
     }
 
     deleteObjective(objective: Objective) {
-        this.objectives = this.objectives.filter(obj => obj !== objective);
-        this.saveObjectives();
+        if (!objective || !objective.id) return;
+        this.objectives = this.objectives.filter(row => row.id !== objective.id);
+        this.service.delete(objective.id).subscribe(() => {
+            this.loadObjectives();
+        });
     }
 
     getObjectiveIcon(objective: Objective): string {
